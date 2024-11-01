@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Search Sensei",
+  "description": "A fully functional browser extension featuring two key privacy features: Sensitivity-Based Search Customization and Data Minimization Alerts.",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Search Sensei"
+  }
+}
