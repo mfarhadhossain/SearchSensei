@@ -6,7 +6,8 @@ module.exports = {
     mode: 'development',
     devtool: 'cheap-module-source-map',
     entry: {
-        popup: path.resolve('src/popup/popup.tsx')
+        popup: path.resolve('src/popup/popup.tsx'),
+        options: path.resolve('src/options/option.tsx'),
     },
     module: {
         rules: [
@@ -14,6 +15,10 @@ module.exports = {
                 use: 'ts-loader',
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
+            },
+            {
+                use: ['style-loader', 'css-loader'],
+                test: /\.css$/i,
             }
         ]
     },
@@ -21,16 +26,15 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve('src/manifest.json'),
+                    from: path.resolve('src/static'),
                     to: path.resolve('dist')
                 }
             ]
         }),
-        new HtmlPlugin({
-            title: "Search Sensei",
-            filename: "popup.html",
-            chunks: ['popup']
-        })
+        ...getHtmlPlugins([
+            'popup',
+            'options'
+        ])
     ],
     resolve: {
         extensions: ['.tsx', '.ts', 'js']
@@ -38,5 +42,18 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: path.resolve('dist'),
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+        },
     }
+}
+
+function getHtmlPlugins(chunks) {
+    return chunks.map(chunk => new HtmlPlugin({
+        title: "Search Sensei",
+        filename: `${chunk}.html`,
+        chunks: [chunk]
+    }))
 }
