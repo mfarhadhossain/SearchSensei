@@ -1,5 +1,6 @@
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log(msg);
-  console.log(sender);
-  sendResponse('From the background script!');
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'SEARCH_QUERY') {
+    // Store the latest search query
+    chrome.storage.local.set({ lastSearchQuery: message.query });
+  }
 });
