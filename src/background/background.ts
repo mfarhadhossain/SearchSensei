@@ -123,7 +123,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.error('Error in message handler:', error);
         sendResponse({
           success: false,
-          isSensitive: true,
+          isSensitive: false,
           error: 'Error processing request',
         });
       }
@@ -134,4 +134,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true; // Keep message channel open for async response
 });
 
-const OPEN_AI_API_KEY = 'YOUR_KEY';
+const OPEN_AI_API_KEY = 'YOUR_API_KEY';

@@ -18,7 +18,15 @@ const monitorSearchQuery = () => {
           chrome.runtime.sendMessage(
             { type: 'CHECK_SENSITIVITY', query },
             (response) => {
-              console.log('Response from background:', response);
+              const isSensitive = response.isSensitive;
+
+              chrome.storage.local.get(['queryHistory'], (result) => {
+                const history = result.queryHistory || [];
+                history.unshift({ query, isSensitive });
+                if (history.length > 10) history.pop(); // Keep the last 10 queries
+                chrome.storage.local.set({ queryHistory: history });
+              });
+
               if (response && response.isSensitive) {
                 const userConfirmed = confirm(
                   `Warning: Your search query contains sensitive information. Do you want to proceed?`

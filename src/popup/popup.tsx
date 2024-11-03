@@ -2,38 +2,46 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './popup.css';
 
+interface QueryHistory {
+  query: string;
+  isSensitive: boolean;
+}
+
 const Popup = () => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [queryHistory, setQueryHistory] = useState<QueryHistory[]>([]);
 
   useEffect(() => {
-    // Fetch the latest search query from Chrome storage
-    chrome.storage.local.get(['lastSearchQuery'], (result) => {
-      if (result.lastSearchQuery) {
-        setSearchQuery(result.lastSearchQuery);
+    // Fetch recent query history from Chrome storage
+    chrome.storage.local.get(['queryHistory'], (result) => {
+      if (result.queryHistory) {
+        setQueryHistory(result.queryHistory);
       }
     });
-
-    // Listen for new search queries and update state
-    const handleMessage = (message: { type: string; query: string }) => {
-      if (message.type === 'SEARCH_QUERY') {
-        setSearchQuery(message.query);
-      }
-    };
-
-    chrome.runtime.onMessage.addListener(handleMessage);
-
-    // Clean up the listener when the component unmounts
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Search Sensei</h1>
-      <div className="bg-gray-100 p-3 rounded-lg">
-        <h2 className="font-semibold mb-1">Latest Search Query:</h2>
-        <p className="text-gray-700">{searchQuery || 'No recent searches'}</p>
+    <div className="popup-container">
+      <h1 className="popup-title">Search Sensei</h1>
+      <div className="popup-content">
+        <p>
+          Your recent searches are checked for sensitivity in real-time. This
+          information is stored locally for your reference.
+        </p>
+        {queryHistory.length > 0 ? (
+          <ul className="query-list">
+            {queryHistory.map((item, index) => (
+              <li
+                key={index}
+                className={item.isSensitive ? 'sensitive' : 'non-sensitive'}
+              >
+                {item.query} -{' '}
+                {item.isSensitive ? 'Sensitive' : 'Non-sensitive'}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No recent queries found.</p>
+        )}
       </div>
     </div>
   );
