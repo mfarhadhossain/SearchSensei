@@ -6,19 +6,26 @@ const Popup = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    // Get the latest search query when popup opens
+    // Fetch the latest search query from Chrome storage
     chrome.storage.local.get(['lastSearchQuery'], (result) => {
       if (result.lastSearchQuery) {
         setSearchQuery(result.lastSearchQuery);
       }
     });
 
-    // Listen for new search queries
-    chrome.runtime.onMessage.addListener((message) => {
+    // Listen for new search queries and update state
+    const handleMessage = (message: { type: string; query: string }) => {
       if (message.type === 'SEARCH_QUERY') {
         setSearchQuery(message.query);
       }
-    });
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
   }, []);
 
   return (

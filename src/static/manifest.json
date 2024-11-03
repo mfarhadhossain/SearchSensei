@@ -23,5 +23,6 @@
       "js": ["contentScript.js"]
     }
   ],
-  "permissions": ["webRequest", "storage", "tabs"]
+  "permissions": ["webRequest", "storage", "tabs", "activeTab"],
+  "host_permissions": ["https://api.openai.com/*"]
 }

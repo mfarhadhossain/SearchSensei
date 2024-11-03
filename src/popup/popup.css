@@ -1,5 +1,35 @@
-body {
-  width: 400px;
-  height: 400px;
-  background-color: green;
+.p-4 {
+  padding: 16px;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.bg-gray-100 {
+  background-color: #f7fafc;
+}
+
+.p-3 {
+  padding: 12px;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.text-gray-700 {
+  color: #4a5568;
+}
+
+.font-semibold {
+  font-weight: 600;
 }
