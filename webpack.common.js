@@ -37,6 +37,10 @@ module.exports = {
                 {
                     from: path.resolve('src/static'),
                     to: path.resolve('dist')
+                },
+                {
+                    from: path.resolve('src/contentScript/contentScript.css'),
+                    to: path.resolve('dist/contentScript.css')
                 }
             ]
         }),
