@@ -1,3 +1,6 @@
+import 'primereact/resources/themes/lara-light-cyan/theme.css';
+
+import { Card, ListBox, Tag } from 'primereact';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './popup.css';
@@ -19,30 +22,36 @@ const Popup = () => {
     });
   }, []);
 
+  const renderQueryItem = (item: QueryHistory) => (
+    <div className="query-item">
+      <span>{item.query}</span>
+      <Tag
+        value={item.isSensitive ? 'Sensitive' : 'Non-sensitive'}
+        severity={item.isSensitive ? 'danger' : 'success'}
+        className="query-tag"
+      />
+    </div>
+  );
+
   return (
     <div className="popup-container">
-      <h1 className="popup-title">Search Sensei</h1>
-      <div className="popup-content">
-        <p>
+      <Card title="Search Sensei" className="popup-card">
+        <p className="popup-description">
           Your recent searches are checked for sensitivity in real-time. This
           information is stored locally for your reference.
         </p>
         {queryHistory.length > 0 ? (
-          <ul className="query-list">
-            {queryHistory.map((item, index) => (
-              <li
-                key={index}
-                className={item.isSensitive ? 'sensitive' : 'non-sensitive'}
-              >
-                {item.query} -{' '}
-                {item.isSensitive ? 'Sensitive' : 'Non-sensitive'}
-              </li>
-            ))}
-          </ul>
+          <ListBox
+            value={null}
+            options={queryHistory}
+            optionLabel="query"
+            itemTemplate={renderQueryItem}
+            className="query-listbox"
+          />
         ) : (
           <p>No recent queries found.</p>
         )}
-      </div>
+      </Card>
     </div>
   );
 };
