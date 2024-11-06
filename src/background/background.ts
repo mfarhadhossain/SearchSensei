@@ -9,27 +9,35 @@ interface SensitivityAnalysis {
 // GDPR sensitive data categories for the prompt
 const GDPR_CATEGORIES = [
   'Personal identification',
-  'Location data',
   'Financial information',
-  'Health information',
   'Biometric data',
+  'Location data',
+  'Health information',
   'Racial or ethnic origin',
   'Political opinions',
   'Religious beliefs',
   'Sexual orientation',
-  'Criminal records',
+  'Trade-Union membership',
 ];
 
 // Function to analyze text sensitivity using OpenAI
 async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
+  const userCategories = await getUserSelectedCategories();
+  const categories =
+    userCategories.length > 0 ? userCategories : GDPR_CATEGORIES;
+
+  console.log(`categories sent `, categories);
   const prompt = `
-      Analyze if the following search query contains or implies GDPR-sensitive personal information.
-      Consider these GDPR categories: ${GDPR_CATEGORIES.join(', ')}.
+      Analyze if the following search query contains or implies personal information that is considered sensitive according to user-defined preferences.
+      Consider ONLY the following categories as sensitive, as per user preferences: ${categories.join(
+        ', '
+      )}.
 
       Query: "${query}"
 
-      Respond in JSON format with:
-      - isSensitive (boolean)
+      If the query does not match any of the specified categories, respond with "isSensitive: false".
+      Otherwise, respond in JSON format with:
+      - isSensitive (boolean, true only if it matches at least one category)
       - categories (array of matched categories)
       - confidence (number between 0 and 1)
       - explanation (brief explanation)
@@ -133,5 +141,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   return true; // Keep message channel open for async response
 });
+
+// Function to fetch user-selected sensitive categories
+async function getUserSelectedCategories(): Promise<string[]> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['sensitiveCategories'], (result) => {
+      if (result.sensitiveCategories) {
+        resolve(result.sensitiveCategories);
+      } else {
+        resolve([]); // Default to empty if no categories are selected
+      }
+    });
+  });
+}
 
 const OPEN_AI_API_KEY = 'YOUR_API_KEY';

@@ -1,38 +1,31 @@
 .popup-container {
   padding: 16px;
-  font-family: Arial, sans-serif;
   min-width: 500px;
   max-width: 500px;
+  font-family: Arial, sans-serif;
 }
 
-.popup-title {
-  font-size: 18px;
-  font-weight: bold;
+.popup-card {
+  padding: 16px;
+}
+
+.popup-description {
   margin-bottom: 10px;
-  color: #333;
+  color: #555;
 }
 
-.popup-content {
-  background-color: #f9f9f9;
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.query-list {
-  list-style-type: none;
-  padding: 0;
+.query-listbox {
   margin-top: 8px;
 }
 
-.query-list li {
-  padding: 4px 0;
+.query-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  font-size: 14px;
 }
 
-.sensitive {
-  color: #d9534f; /* Red color for sensitive queries */
-  font-weight: bold;
-}
-
-.non-sensitive {
-  color: #5cb85c; /* Green color for non-sensitive queries */
+.query-tag {
+  font-size: 12px;
 }
