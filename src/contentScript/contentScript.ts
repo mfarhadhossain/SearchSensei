@@ -1,6 +1,6 @@
 const SEARCH_SELECTORS = {
-  google: "input[name='q']",
-  bing: "input[name='q'], input#sb_form_q",
+  google: "input[name='q'], textarea[name='q'], input[id='input']",
+  bing: "input[name='q']",
   duckduckgo: "input[name='q']",
 };
 
@@ -46,7 +46,7 @@ const monitorSearchQuery = () => {
                   chrome.storage.local.set({ queryHistory: history });
                 });
 
-                if (response && response.isSensitive) {
+                if (response.isSensitive === true) {
                   showCustomModal(
                     `Warning: Your search query contains sensitive information. Do you want to proceed?`,
                     () => {
@@ -56,7 +56,7 @@ const monitorSearchQuery = () => {
                       searchInput.value = '';
                     }
                   );
-                } else {
+                } else if (response.isSensitive === false) {
                   // If not sensitive, proceed with the search
                   searchInput.form?.submit();
                 }
@@ -84,7 +84,7 @@ const showCustomModal = (
   modal.classList.add('custom-modal');
   modal.innerHTML = `
       <div class="custom-modal-content">
-          <p>${message}</p>
+          <p id="text">${message}</p>
           <button id="confirm-btn">Proceed</button>
           <button id="cancel-btn">Cancel</button>
       </div>

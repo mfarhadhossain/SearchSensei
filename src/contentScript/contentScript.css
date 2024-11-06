@@ -13,7 +13,8 @@
 }
 
 .custom-modal-content {
-  background-color: white;
+  background-color: white !important;
+  color: black !important;
   padding: 20px;
   border-radius: 8px;
   width: 300px;
@@ -28,6 +29,9 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+.custom-modal-content text {
+  color: red !important;
 }
 
 #confirm-btn {
