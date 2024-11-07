@@ -24,9 +24,9 @@ const Popup = () => {
 
   const renderQueryItem = (item: QueryHistory) => (
     <div className="query-item">
-      <span>{item.query}</span>
+      <span className="query-text">{item.query}</span>
       <Tag
-        value={item.isSensitive ? 'Sensitive' : 'Non-sensitive'}
+        value={item.isSensitive ? 'Sensitive' : 'Non-Sensitive'}
         severity={item.isSensitive ? 'danger' : 'success'}
         className="query-tag"
       />
@@ -37,8 +37,7 @@ const Popup = () => {
     <div className="popup-container">
       <Card title="Search Sensei" className="popup-card">
         <p className="popup-description">
-          Your recent searches are checked for sensitivity in real-time. This
-          information is stored locally for your reference.
+          Recent searches are stored locally for your reference.
         </p>
         {queryHistory.length > 0 ? (
           <ListBox

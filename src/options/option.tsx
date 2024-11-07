@@ -26,13 +26,24 @@ const CATEGORIES = [
 const Options = () => {
   const [selectedCategories, setSelectedCategories] =
     useState<string[]>(CATEGORIES);
+  const [enableSanitization, setEnableSanitization] = useState<boolean>(false);
+  const [enableDataMinimization, setEnableDataMinimization] =
+    useState<boolean>(false);
 
   useEffect(() => {
-    chrome.storage.local.get(['sensitiveCategories'], (result) => {
-      if (result.sensitiveCategories && result.sensitiveCategories.length > 0) {
-        setSelectedCategories(result.sensitiveCategories);
+    chrome.storage.local.get(
+      ['sensitiveCategories', 'enableSanitization', 'enableDataMinimization'],
+      (result) => {
+        if (
+          result.sensitiveCategories &&
+          result.sensitiveCategories.length > 0
+        ) {
+          setSelectedCategories(result.sensitiveCategories);
+        }
+        setEnableSanitization(result.enableSanitization || false);
+        setEnableDataMinimization(result.enableDataMinimization || false);
       }
-    });
+    );
   }, []);
 
   const onCategoryChange = (category: string) => {
@@ -44,7 +55,11 @@ const Options = () => {
 
   const savePreferences = () => {
     chrome.storage.local.set(
-      { sensitiveCategories: selectedCategories },
+      {
+        sensitiveCategories: selectedCategories,
+        enableSanitization,
+        enableDataMinimization,
+      },
       () => {
         alert('Preferences saved successfully!');
       }
@@ -76,6 +91,27 @@ const Options = () => {
               </label>
             </div>
           ))}
+        </div>
+        <h3>Feature Options</h3>
+        <div className="feature-toggle">
+          <Checkbox
+            inputId="enableSanitization"
+            checked={enableSanitization}
+            onChange={() => setEnableSanitization(!enableSanitization)}
+          />
+          <label htmlFor="enableSanitization" className="feature-label">
+            Enable Query Sanitization
+          </label>
+        </div>
+        <div className="feature-toggle">
+          <Checkbox
+            inputId="enableDataMinimization"
+            checked={enableDataMinimization}
+            onChange={() => setEnableDataMinimization(!enableDataMinimization)}
+          />
+          <label htmlFor="enableDataMinimization" className="feature-label">
+            Enable Data Minimization Alert
+          </label>
         </div>
         <Button
           label="Save Preferences"

@@ -33,11 +33,16 @@ const monitorSearchQuery = () => {
         console.log(' query:', query);
         // Listen for response from background to proceed or not
         try {
+          const enableSanitization = await getEnableSanitization();
+
           chrome.runtime.sendMessage(
             { type: 'CHECK_SENSITIVITY', query },
             (response) => {
               if (response) {
                 const isSensitive = response.isSensitive;
+                const sanitizedQuery =
+                  response.analysis?.sanitizedQuery ||
+                  'Something is wrong with the sanitized query';
                 console.log(`Response is `, isSensitive);
                 chrome.storage.local.get(['queryHistory'], (result) => {
                   const history = result.queryHistory || [];
@@ -46,7 +51,18 @@ const monitorSearchQuery = () => {
                   chrome.storage.local.set({ queryHistory: history });
                 });
 
-                if (response.isSensitive === true) {
+                if (response.isSensitive === true && enableSanitization) {
+                  showCustomModal(
+                    `Warning: Your search query contains sensitive information. We suggest the following sanitized query: "${sanitizedQuery}". Would you like to use this sanitized version?`,
+                    () => {
+                      searchInput.value = sanitizedQuery;
+                      searchInput.form?.submit();
+                    },
+                    () => {
+                      searchInput.value = '';
+                    }
+                  );
+                } else if (response.isSensitive === true) {
                   showCustomModal(
                     `Warning: Your search query contains sensitive information. Do you want to proceed?`,
                     () => {
@@ -74,7 +90,16 @@ const monitorSearchQuery = () => {
 };
 setTimeout(monitorSearchQuery, 1);
 // monitorSearchQuery();
-
+const getEnableSanitization = async (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(
+      ['enableSanitization'],
+      ({ enableSanitization }) => {
+        resolve(!!enableSanitization);
+      }
+    );
+  });
+};
 const showCustomModal = (
   message: string,
   onConfirm: () => void,

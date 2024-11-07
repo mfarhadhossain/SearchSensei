@@ -4,6 +4,7 @@ interface SensitivityAnalysis {
   categories: string[];
   confidence: number;
   explanation: string;
+  sanitizedQuery: string;
 }
 
 // GDPR sensitive data categories for the prompt
@@ -41,6 +42,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
       - categories (array of matched categories)
       - confidence (number between 0 and 1)
       - explanation (brief explanation)
+      - sanitizedQuery (string, a version of the query where sensitive information is removed or abstracted, using replacement or abstraction techniques)
 
       Only provide the JSON, no other text.
     `;
@@ -61,7 +63,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
             {
               role: 'system',
               content:
-                'You are a GDPR compliance analyzer. Respond only in valid JSON format.',
+                'You are an expert in cybersecurity and data privacy, specializing in GDPR compliance analysis. Respond only in valid JSON format and avoid adding any explanatory text outside the JSON response.',
             },
             {
               role: 'user',
@@ -108,6 +110,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
       confidence: 1,
       explanation:
         'Error during sensitivity analysis, treating as sensitive for safety',
+      sanitizedQuery: '',
     };
   }
 }
