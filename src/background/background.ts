@@ -1,3 +1,10 @@
+const OPEN_AI_API_KEY = 'YOURKEY';
+interface SensitivityTerm {
+  term: string;
+  category: string;
+  startIndex: number;
+  endIndex: number;
+}
 // Sensitivity analysis result interface
 interface SensitivityAnalysis {
   isSensitive: boolean;
@@ -5,6 +12,7 @@ interface SensitivityAnalysis {
   confidence: number;
   explanation: string;
   sanitizedQuery: string;
+  sensitiveTerms?: SensitivityTerm[];
 }
 
 // GDPR sensitive data categories for the prompt
@@ -43,7 +51,11 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
       - confidence (number between 0 and 1)
       - explanation (brief explanation)
       - sanitizedQuery (string, a version of the query where sensitive information is removed or abstracted, using replacement or abstraction techniques)
-
+      - sensitiveTerms (array of objects), each with:
+        - term (string, the sensitive term)
+        - category (string, the category it matches)
+        - startIndex (number, the starting index of the term in the query)
+        - endIndex (number, the ending index of the term in the query)
       Only provide the JSON, no other text.
     `;
 
@@ -70,7 +82,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
               content: prompt,
             },
           ],
-          max_tokens: 150,
+          max_tokens: 250,
         }),
       }
     );
@@ -158,4 +170,108 @@ async function getUserSelectedCategories(): Promise<string[]> {
   });
 }
 
-const OPEN_AI_API_KEY = 'YOUR_API_KEY';
+async function isDataMinimizationEnabled(): Promise<boolean> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['enableDataMinimization'], (result) => {
+      resolve(!!result.enableDataMinimization);
+    });
+  });
+}
+
+function isSearchQuery(
+  details: chrome.webRequest.WebRequestHeadersDetails
+): boolean {
+  const url = new URL(details.url);
+  return (
+    details.method === 'GET' &&
+    url.hostname.endsWith('google.com') &&
+    url.pathname === '/search' &&
+    url.searchParams.has('q')
+  );
+}
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  function (details) {
+    if (isSearchQuery(details)) {
+      console.log(`Details are: `, details);
+      isDataMinimizationEnabled().then((enabled) => {
+        if (!enabled) {
+          return;
+        }
+        // Capture headers and parameters
+        const requestHeaders = details.requestHeaders || [];
+        const urlParams = new URLSearchParams(new URL(details.url).search);
+
+        // Proceed to comparison logic
+        compareDataCollection(details, requestHeaders, urlParams);
+      });
+    }
+  },
+  { urls: ['*://*.google.com/*'] },
+  ['requestHeaders']
+);
+
+function compareDataCollection(
+  details: chrome.webRequest.WebRequestHeadersDetails,
+  requestHeaders: chrome.webRequest.HttpHeader[],
+  urlParams: URLSearchParams
+) {
+  const sensitiveDataPoints: {
+    name: string;
+    type: string;
+    value: string;
+    purpose: string;
+  }[] = [];
+
+  // Check URL parameters
+  for (const [key, value] of urlParams.entries()) {
+    if (['q', 'rlz', 'sxsrf', 'ei'].includes(key)) {
+      sensitiveDataPoints.push({
+        name: key,
+        type: 'parameter',
+        value,
+        purpose:
+          key === 'q' ? 'User query (sensitive content)' : 'Tracking/Session',
+      });
+    }
+  }
+
+  // Check request headers
+  for (const header of requestHeaders) {
+    if (
+      ['User-Agent', 'sec-ch-ua', 'sec-ch-ua-platform'].includes(header.name)
+    ) {
+      sensitiveDataPoints.push({
+        type: 'header',
+        name: header.name,
+        value: header.value,
+        purpose: 'Provides user/device information',
+      });
+    }
+  }
+  chrome.cookies.getAll({}, (cookies) => {
+    cookies.forEach((cookie) => {
+      if (['SID', 'HSID', 'SSID', 'NID'].includes(cookie.name)) {
+        sensitiveDataPoints.push({
+          type: 'cookie',
+          name: cookie.name,
+          value: cookie.value,
+          purpose: 'Session tracking/personalization',
+        });
+      }
+    });
+  });
+  console.log(`Sensitive data points`, sensitiveDataPoints);
+  if (sensitiveDataPoints.length > 0) {
+    chrome.storage.local.set({
+      dataMinimizationAlert: sensitiveDataPoints,
+      discrepancyCount: sensitiveDataPoints.length,
+    });
+    // Update badge to show the number of discrepancies
+    chrome.action.setBadgeText({ text: sensitiveDataPoints.length.toString() });
+    chrome.action.setBadgeBackgroundColor({ color: '#FFFF00' });
+  } else {
+    // Clear badge if no discrepancies
+    chrome.action.setBadgeText({ text: '' });
+  }
+}

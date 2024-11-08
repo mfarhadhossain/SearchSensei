@@ -44,3 +44,7 @@
 .feature-label {
   margin-left: 8px;
 }
+
+.p-card-content {
+  padding: 0 !important;
+}

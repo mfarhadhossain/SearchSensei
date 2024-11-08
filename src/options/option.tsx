@@ -29,10 +29,16 @@ const Options = () => {
   const [enableSanitization, setEnableSanitization] = useState<boolean>(false);
   const [enableDataMinimization, setEnableDataMinimization] =
     useState<boolean>(false);
+  const [showRecentSearches, setShowRecentSearches] = useState<boolean>(true);
 
   useEffect(() => {
     chrome.storage.local.get(
-      ['sensitiveCategories', 'enableSanitization', 'enableDataMinimization'],
+      [
+        'sensitiveCategories',
+        'enableSanitization',
+        'enableDataMinimization',
+        'showRecentSearches',
+      ],
       (result) => {
         if (
           result.sensitiveCategories &&
@@ -42,6 +48,7 @@ const Options = () => {
         }
         setEnableSanitization(result.enableSanitization || false);
         setEnableDataMinimization(result.enableDataMinimization || false);
+        setShowRecentSearches(result.showRecentSearches ?? true);
       }
     );
   }, []);
@@ -59,6 +66,7 @@ const Options = () => {
         sensitiveCategories: selectedCategories,
         enableSanitization,
         enableDataMinimization,
+        showRecentSearches,
       },
       () => {
         alert('Preferences saved successfully!');
@@ -111,6 +119,16 @@ const Options = () => {
           />
           <label htmlFor="enableDataMinimization" className="feature-label">
             Enable Data Minimization Alert
+          </label>
+        </div>
+        <div className="feature-toggle">
+          <Checkbox
+            inputId="showRecentSearches"
+            checked={showRecentSearches}
+            onChange={() => setShowRecentSearches(!showRecentSearches)}
+          />
+          <label htmlFor="showRecentSearches" className="feature-label">
+            Show Recent Searches in Popup
           </label>
         </div>
         <Button

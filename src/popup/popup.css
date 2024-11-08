@@ -1,18 +1,17 @@
 .popup-container {
   padding: 8px;
   min-width: 500px;
-  max-width: 500px;
   font-family: Arial, sans-serif;
 }
 
 .popup-card {
-  padding: 8px;
+  /* padding: 8px; */
+  width: 100%;
 }
 
 .popup-description {
   margin-bottom: 6px;
   font-size: 12px;
-  color: #555;
 }
 
 .query-listbox {
@@ -23,19 +22,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px;
-  font-size: 12px;
 }
 
 .query-tag {
   font-size: 10px;
   padding: 2px 4px;
 }
+.query-tag.sensitive {
+  background-color: #ffcccc;
+  color: #cc0000;
+}
 
+.query-tag.non-sensitive {
+  background-color: #ccffcc;
+  color: #009900;
+}
 .query-text {
-  flex: 1; /* Flex for text to avoid overflow */
-  margin-right: 8px; /* Space between text and tag */
+  flex: 1;
+  margin-right: 8px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Truncate long queries */
+  text-overflow: ellipsis;
+}
+.data-minimization-section {
+  margin-bottom: 20px;
+}
+
+.data-table {
+  margin-top: 10px;
+}
+
+.masked-value {
+  font-family: monospace;
+  color: #555;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
 }

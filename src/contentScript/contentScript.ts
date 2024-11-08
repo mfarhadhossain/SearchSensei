@@ -43,6 +43,8 @@ const monitorSearchQuery = () => {
                 const sanitizedQuery =
                   response.analysis?.sanitizedQuery ||
                   'Something is wrong with the sanitized query';
+                const sensitiveTerms = response.analysis?.sensitiveTerms || [];
+
                 console.log(`Response is `, isSensitive);
                 chrome.storage.local.get(['queryHistory'], (result) => {
                   const history = result.queryHistory || [];
@@ -52,10 +54,11 @@ const monitorSearchQuery = () => {
                 });
 
                 if (response.isSensitive === true && enableSanitization) {
-                  showCustomModal(
-                    `Warning: Your search query contains sensitive information. We suggest the following sanitized query: "${sanitizedQuery}". Would you like to use this sanitized version?`,
-                    () => {
-                      searchInput.value = sanitizedQuery;
+                  showSensitiveTermsModal(
+                    query,
+                    sensitiveTerms,
+                    (updatedQuery) => {
+                      searchInput.value = updatedQuery;
                       searchInput.form?.submit();
                     },
                     () => {
@@ -88,6 +91,7 @@ const monitorSearchQuery = () => {
     });
   }
 };
+
 setTimeout(monitorSearchQuery, 1);
 // monitorSearchQuery();
 const getEnableSanitization = async (): Promise<boolean> => {
@@ -126,3 +130,110 @@ const showCustomModal = (
     document.body.removeChild(modal); // Remove the modal
   });
 };
+
+// Listener for messages from the background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'DATA_MINIMIZATION_ALERT') {
+  }
+});
+
+function showSensitiveTermsModal(
+  originalQuery: string,
+  sensitiveTerms: SensitivityTerm[],
+  onConfirm: (updatedQuery: string) => void,
+  onCancel: () => void
+) {
+  // Create the modal container
+  const modal = document.createElement('div');
+  modal.classList.add('custom-modal');
+  modal.innerHTML = `
+    <div class="custom-modal-content">
+      <p>We've detected sensitive information in your query. Please choose how to handle each item:</p>
+      <div id="terms-container"></div>
+      <button id="confirm-btn">Proceed</button>
+      <button id="cancel-btn">Cancel</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Reference to the terms container
+  const termsContainer = modal.querySelector('#terms-container');
+
+  // Keep track of user choices
+  const userChoices: { [key: string]: string } = {}; // term: action
+
+  // For each sensitive term, create options
+  sensitiveTerms.forEach((termInfo, index) => {
+    const termDiv = document.createElement('div');
+    termDiv.classList.add('term-item');
+    termDiv.innerHTML = `
+      <p><strong>${termInfo.term}</strong> (${termInfo.category})</p>
+      <button data-action="replace" data-index="${index}">Replace</button>
+      <button data-action="abstract" data-index="${index}">Abstract</button>
+      <button data-action="keep" data-index="${index}">Keep</button>
+    `;
+    termsContainer.appendChild(termDiv);
+    termDiv.querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', async (event) => {
+        const action = (event.target as HTMLElement).dataset.action;
+
+        if (action) {
+          if (action === 'replace') {
+            userChoices[termInfo.term] = `[${termInfo.category.toUpperCase()}]`;
+          } else if (action === 'abstract') {
+            const abstractedTerm = await getAbstractedTerm(
+              termInfo.term,
+              termInfo.category
+            );
+            userChoices[termInfo.term] = abstractedTerm;
+          } else if (action === 'keep') {
+            userChoices[termInfo.term] = termInfo.term;
+          }
+
+          // Disable buttons for this term
+          (event.currentTarget as HTMLButtonElement).parentElement
+            ?.querySelectorAll('button')
+            .forEach((btn) => {
+              btn.disabled = true;
+            });
+        }
+      });
+    });
+  });
+
+  // Confirm and proceed
+  document.getElementById('confirm-btn')?.addEventListener('click', () => {
+    // Build the updated query based on user choices
+    let updatedQuery = originalQuery;
+    Object.keys(userChoices).forEach((term) => {
+      const replacement = userChoices[term];
+      const regex = new RegExp(term, 'g');
+      updatedQuery = updatedQuery.replace(regex, replacement);
+    });
+
+    onConfirm(updatedQuery);
+    document.body.removeChild(modal);
+  });
+
+  // Cancel and clear input
+  document.getElementById('cancel-btn')?.addEventListener('click', () => {
+    onCancel();
+    document.body.removeChild(modal);
+  });
+}
+
+async function getAbstractedTerm(
+  term: string,
+  category: string
+): Promise<string> {
+  // Use OpenAI API or predefined mappings to get an abstracted term
+  // For simplicity, we'll use a mapping here
+  const abstractionMapping: { [key: string]: string } = {
+    'Personal identification': 'someone',
+    'Location data': 'a place',
+    'Health information': 'a health condition',
+    // Add more as needed
+  };
+
+  return abstractionMapping[category] || 'something';
+}

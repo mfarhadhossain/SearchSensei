@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Search Sensei",
-  "description": "A fully functional browser extension featuring two key privacy features: Sensitivity-Based Search Customization and Data Minimization Alerts.",
+  "description": "A browser extension featuring two key privacy features: Sensitivity-Based Search Customization and Data Minimization Alerts.",
   "version": "1.0.0",
   "action": {
     "default_popup": "popup.html",
@@ -24,6 +24,6 @@
       "css": ["contentScript.css"]
     }
   ],
-  "permissions": ["webRequest", "storage", "tabs", "activeTab"],
-  "host_permissions": ["https://api.openai.com/*"]
+  "permissions": ["webRequest", "storage", "tabs", "activeTab", "cookies"],
+  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"]
 }
