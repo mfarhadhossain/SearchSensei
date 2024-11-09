@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import React, { useEffect, useRef, useState } from 'react';
-// import ReactDOM from 'react-dom';
 import ReactDOM from 'react-dom/client';
 import SanitizerPanel from '../components/SanitizerPanel';
 import { SensitivityTerm } from '../types';
@@ -18,6 +18,7 @@ const App = () => {
   const [sensitiveTerms, setSensitiveTerms] = useState<SensitivityTerm[]>([]);
   const [enableSanitization, setEnableSanitization] = useState<boolean>(true);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const SEARCH_SELECTORS = {
     google: "input[name='q'], textarea[name='q'], input[id='input']",
@@ -43,6 +44,7 @@ const App = () => {
           const query = inputElement.value.trim();
 
           try {
+            setLoading(true);
             const enableSanitization = await getEnableSanitization();
             console.log(enableSanitization);
 
@@ -52,10 +54,7 @@ const App = () => {
               { type: 'CHECK_SENSITIVITY', query },
               (response) => {
                 if (response) {
-                  console.log(
-                    'Received response from background script:',
-                    response
-                  );
+                  setLoading(false);
 
                   const isSensitive = response.isSensitive;
                   const sensitiveTerms: SensitivityTerm[] =
@@ -84,6 +83,7 @@ const App = () => {
               }
             );
           } catch (error) {
+            setLoading(false);
             console.error('Error in sensitivity check:', error);
             // Allow search to proceed if there's an error
             inputElement!.form?.submit();
@@ -171,6 +171,11 @@ const App = () => {
 
   return (
     <>
+      {loading && (
+        <div className="loading-overlay">
+          <ProgressSpinner />
+        </div>
+      )}
       {showSanitizerPanel && (
         <SanitizerPanel
           originalQuery={originalQuery}
