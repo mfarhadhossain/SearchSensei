@@ -4,7 +4,8 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/saga-blue/theme.css'; // Choose your theme
+// import 'primereact/resources/themes/lara-light-indigo/theme.css'; // Choose your theme
+import 'primereact/resources/themes/saga-blue/theme.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { SensitivityTerm } from '../types';
 import './SanitizerPanel.css'; // Custom styles if needed
@@ -83,13 +84,14 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
     <div>
       <Button
         label="Cancel"
-        icon="pi pi-times"
-        className="p-button-text"
+        severity="danger"
+        className="p-button-cancel"
         onClick={onCancel}
       />
       <Button
         label="Confirm"
-        icon="pi pi-check"
+        severity="success"
+        className="p-button-confirm"
         onClick={() => onConfirm(updatedQuery)}
         autoFocus
       />
@@ -103,6 +105,8 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
       modal
       onHide={onCancel}
       footer={footer}
+      style={{ width: '500px', maxWidth: '90vw' }}
+      contentStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <p>
         We've detected sensitive information in your query. Please choose how to
