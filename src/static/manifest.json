@@ -24,6 +24,17 @@
       "css": ["contentScript.css"]
     }
   ],
-  "permissions": ["webRequest", "storage", "tabs", "activeTab", "cookies"],
-  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"]
+  "permissions": [
+    "webRequest",
+    "storage",
+    "tabs",
+    "activeTab",
+    "cookies",
+    "alarms",
+    "contextMenus"
+  ],
+  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

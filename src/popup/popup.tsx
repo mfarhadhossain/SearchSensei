@@ -1,6 +1,11 @@
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 
-import { Card, Column, DataTable, ListBox, Tag } from 'primereact';
+import { Card } from 'primereact/card';
+import { Column } from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { ListBox } from 'primereact/listbox';
+import { Tag } from 'primereact/tag';
+
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './popup.css';
