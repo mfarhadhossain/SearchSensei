@@ -25,11 +25,11 @@ const CATEGORY_MAPPING: { [key: string]: string[] } = {
   'Biometric data': ['BIOMETRICDATA'],
   'Location data': ['GEO-LOCATION'],
   'Health information': ['HEALTHINFORMATION'],
-  'Racial or ethnic origin': ['DEMOGRAPHICATTRIBUTE'],
-  'Political opinions': ['DEMOGRAPHICATTRIBUTE'],
-  'Religious beliefs': ['DEMOGRAPHICATTRIBUTE'],
-  'Sexual orientation': ['DEMOGRAPHICATTRIBUTE'],
-  'Trade-Union membership': ['AFFILIATION'],
+  'Racial or ethnic origin': ['RACIAL_OR_ETHNIC_ORIGIN'],
+  'Political opinions': ['POLITICAL_OPINION'],
+  'Religious beliefs': ['RELIGIOUS_BELIEF'],
+  'Sexual orientation': ['SEXUAL_ORIENTATION'],
+  'Trade-Union membership': ['TRADE_UNION_MEMBERSHIP'],
 };
 
 const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
@@ -43,8 +43,15 @@ const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
     'Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.)',
   AFFILIATION:
     'Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc.',
-  DEMOGRAPHICATTRIBUTE:
-    'Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex',
+  RACIAL_OR_ETHNIC_ORIGIN: 'Information about a person’s race or ethnicity.',
+  POLITICAL_OPINION:
+    'Details about a person’s political opinions or affiliations.',
+  RELIGIOUS_BELIEF:
+    'Information regarding a person’s religious beliefs or affiliations.',
+  SEXUAL_ORIENTATION:
+    'Details about a person’s sexual orientation or gender identity.',
+  TRADE_UNION_MEMBERSHIP:
+    'Information about a person’s membership in trade unions.',
   TIME: 'Description of a specific date, time, or duration',
   HEALTHINFORMATION:
     'Details concerning an individual’s health status, medical conditions, treatment records, and health insurance information',
@@ -57,28 +64,10 @@ const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
   // Add other definitions as needed
 };
 
-const taxonomy = `
-- NAME: Name
-- ADDRESS: Physical address
-- EMAIL: Email address
-- PHONENUMBER: Phone number
-- ID: Identifiers, including ID Number, passport number, SSN, driver's license, taxpayer identification number
-- ONLINEIDENTITY: IP address, username, URL, password, key
-- GEO-LOCATION: Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.)
-- AFFILIATION: Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc.
-- DEMOGRAPHICATTRIBUTE: Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex
-- TIME: Description of a specific date, time, or duration
-- HEALTHINFORMATION: Details concerning an individual’s health status, medical conditions, treatment records, and health insurance information
-- FINANCIALINFORMATION: Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities
-- EDUCATIONALRECORD: Educational background details, including academic records, transcripts, degrees, and certification
-`;
-
 // Function to analyze text sensitivity using OpenAI
 async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
   console.log('before getting userSelectedtaxonomy');
   const taxonomy = await getUserSelectedTaxonomy();
-  // const categories =
-  //   userCategories.length > 0 ? userCategories : GDPR_CATEGORIES;
 
   console.log(`taxonomy sent `, taxonomy);
   const systemPrompt = `
@@ -87,17 +76,17 @@ ${taxonomy}`;
   console.log(systemPrompt);
   const userPrompt = `
 User Search Query: ${query}
-For the given search query that a user sends to a search engine, identify all the personally identifiable information using the above taxonomy only. The entity_type should be selected from the all-caps categories.
 
-Note that the information should be related to a real person not in a public context, but okay if not uniquely identifiable. Result should be in its minimum possible unit.
+Instructions:
 
-For each detected entity, provide:
-- "entity_type": the category from the taxonomy
-- "text": the exact text of the entity in the message
-- "replace": the placeholder in the format "[CATEGORY]"
-- "abstract": an abstracted version of the entity (e.g., generalization)
+- For the given search query that a user sends to a search engine, identify all the personally identifiable information using the above taxonomy only. Note that the information should be related to a real person not in a public context, but okay if not uniquely identifiable. Result should be in its minimum possible unit.
+- For each detected entity, provide:
+  - "entity_type": should be selected from the all-caps categories
+  - "text": the exact text of the entity in the message
+  - "replace": the placeholder in the format "[CATEGORY]"
+  - "abstract": an abstracted version of the entity (e.g., generalization)
 
-Return ONLY a JSON in the following format:
+- Return ONLY a JSON in the following format:
 {
   "isSensitive": true (true only if it matches at least one category) or false,
   "results": [

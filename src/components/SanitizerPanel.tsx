@@ -5,7 +5,7 @@ import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/saga-blue/theme.css'; // Choose your theme
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SensitivityTerm } from '../types';
 import './SanitizerPanel.css'; // Custom styles if needed
 
@@ -24,20 +24,45 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
 }) => {
   const [userChoices, setUserChoices] = useState<{ [key: string]: string }>({});
   const [updatedQuery, setUpdatedQuery] = useState(originalQuery);
+  const placeholderCounters = useRef<{ [key: string]: number }>({});
+  const placeholders = useRef<{ [key: string]: string }>({});
 
   useEffect(() => {
     // Initialize user choices
     const initialChoices = sensitiveTerms.reduce((acc, term) => {
-      acc[term.text] = term.text; // Default to 'Keep'
+      acc[term.text] = 'keep'; // Default to 'Keep'
       return acc;
     }, {} as { [key: string]: string });
+
     setUserChoices(initialChoices);
+
+    placeholderCounters.current = {};
+    placeholders.current = {};
   }, [sensitiveTerms]);
 
   useEffect(() => {
     // Update the query preview whenever user choices change
     let newQuery = originalQuery;
-    for (const [term, replacement] of Object.entries(userChoices)) {
+    for (const [term, action] of Object.entries(userChoices)) {
+      let replacement: string = term;
+      if (action === 'replace') {
+        if (!placeholders.current[term]) {
+          const termInfo = sensitiveTerms.find((t) => t.text === term);
+          if (termInfo) {
+            const { entity_type } = termInfo;
+            if (!placeholderCounters.current[entity_type]) {
+              placeholderCounters.current[entity_type] = 1;
+            }
+            const placeholder = `[${entity_type}${placeholderCounters.current[entity_type]}]`;
+            placeholderCounters.current[entity_type] += 1;
+            placeholders.current[term] = placeholder;
+          }
+        }
+        replacement = placeholders.current[term];
+      } else if (action === 'abstract') {
+        const termInfo = sensitiveTerms.find((t) => t.text === term);
+        replacement = termInfo ? termInfo.abstract : term;
+      }
       const regex = new RegExp(
         `\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`,
         'gi'
@@ -45,12 +70,12 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
       newQuery = newQuery.replace(regex, replacement);
     }
     setUpdatedQuery(newQuery);
-  }, [userChoices, originalQuery]);
+  }, [userChoices, originalQuery, sensitiveTerms]);
 
-  const handleChoiceChange = (term: string, value: string) => {
+  const handleChoiceChange = (termInfo: SensitivityTerm, action: string) => {
     setUserChoices((prevChoices) => ({
       ...prevChoices,
-      [term]: value,
+      [termInfo.text]: action,
     }));
   };
 
@@ -92,17 +117,18 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
             id={`term-${index}`}
             value={userChoices[termInfo.text]}
             options={[
-              { label: `Keep ("${termInfo.text}")`, value: termInfo.text },
+              { label: `Keep ("${termInfo.text}")`, value: 'keep' },
               {
-                label: `Replace with "[${termInfo.replace}]"`,
-                value: `[${termInfo.replace}]`,
+                label: `Replace with "[${termInfo.entity_type}]"`,
+                value: 'replace',
               },
+              ,
               {
                 label: `Abstract as "${termInfo.abstract}"`,
-                value: termInfo.abstract,
+                value: 'abstract',
               },
             ]}
-            onChange={(e) => handleChoiceChange(termInfo.text, e.value)}
+            onChange={(e) => handleChoiceChange(termInfo, e.value)}
             placeholder="Select an action"
             className="p-inputgroup"
           />
