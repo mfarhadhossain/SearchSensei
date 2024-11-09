@@ -1,0 +1,53 @@
+/* General dialog container styling */
+.p-dialog .p-dialog-content {
+  padding: 1.5rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Header and preview styling */
+.query-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+}
+
+.query-preview h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.query-preview p {
+  margin: 0.5rem 0 0;
+  color: #555;
+  font-style: italic;
+}
+
+/* Label for each term */
+.p-field label {
+  font-weight: 600;
+  color: #444;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* Dropdown styling */
+.p-inputgroup {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.p-dropdown {
+  width: 100%;
+}
+
+/* Footer button styling */
+.p-button-text {
+  color: #f44336;
+}
+
+.p-button {
+  margin-right: 0.5rem;
+}

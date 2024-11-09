@@ -1,66 +1,119 @@
-const OPEN_AI_API_KEY = 'YOURKEY';
+const OPEN_AI_API_KEY = 'Your_API_KEY';
+
 interface SensitivityTerm {
-  term: string;
-  category: string;
-  startIndex: number;
-  endIndex: number;
+  entity_type: string; // Category from the taxonomy
+  text: string; // Detected entity text
+  replace: string; // Placeholder for replacement
+  abstract: string; // Abstracted version of the entity
 }
 // Sensitivity analysis result interface
 interface SensitivityAnalysis {
   isSensitive: boolean;
-  categories: string[];
-  confidence: number;
-  explanation: string;
-  sanitizedQuery: string;
-  sensitiveTerms?: SensitivityTerm[];
+  results: SensitivityTerm[];
 }
 
-// GDPR sensitive data categories for the prompt
-const GDPR_CATEGORIES = [
-  'Personal identification',
-  'Financial information',
-  'Biometric data',
-  'Location data',
-  'Health information',
-  'Racial or ethnic origin',
-  'Political opinions',
-  'Religious beliefs',
-  'Sexual orientation',
-  'Trade-Union membership',
-];
+const CATEGORY_MAPPING: { [key: string]: string[] } = {
+  'Personal identification': [
+    'NAME',
+    'ADDRESS',
+    'EMAIL',
+    'PHONENUMBER',
+    'ID',
+    'ONLINEIDENTITY',
+  ],
+  'Financial information': ['FINANCIALINFORMATION'],
+  'Biometric data': ['BIOMETRICDATA'],
+  'Location data': ['GEO-LOCATION'],
+  'Health information': ['HEALTHINFORMATION'],
+  'Racial or ethnic origin': ['DEMOGRAPHICATTRIBUTE'],
+  'Political opinions': ['DEMOGRAPHICATTRIBUTE'],
+  'Religious beliefs': ['DEMOGRAPHICATTRIBUTE'],
+  'Sexual orientation': ['DEMOGRAPHICATTRIBUTE'],
+  'Trade-Union membership': ['AFFILIATION'],
+};
+
+const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
+  NAME: 'Name',
+  ADDRESS: 'Physical address',
+  EMAIL: 'Email address',
+  PHONENUMBER: 'Phone number',
+  ID: 'Identifiers, including ID Number, passport number, SSN, driver’s license, taxpayer identification number',
+  ONLINEIDENTITY: 'IP address, username, URL, password, key',
+  'GEO-LOCATION':
+    'Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.)',
+  AFFILIATION:
+    'Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc.',
+  DEMOGRAPHICATTRIBUTE:
+    'Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex',
+  TIME: 'Description of a specific date, time, or duration',
+  HEALTHINFORMATION:
+    'Details concerning an individual’s health status, medical conditions, treatment records, and health insurance information',
+  FINANCIALINFORMATION:
+    'Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities',
+  EDUCATIONALRECORD:
+    'Educational background details, including academic records, transcripts, degrees, and certification',
+  BIOMETRICDATA:
+    'Biometric data such as fingerprints, facial recognition data, retinal scans, etc.',
+  // Add other definitions as needed
+};
+
+const taxonomy = `
+- NAME: Name
+- ADDRESS: Physical address
+- EMAIL: Email address
+- PHONENUMBER: Phone number
+- ID: Identifiers, including ID Number, passport number, SSN, driver's license, taxpayer identification number
+- ONLINEIDENTITY: IP address, username, URL, password, key
+- GEO-LOCATION: Places and locations, such as cities, provinces, countries, international regions, or named infrastructures (bus stops, bridges, etc.)
+- AFFILIATION: Names of organizations, such as public and private companies, schools, universities, public institutions, prisons, healthcare institutions, non-governmental organizations, churches, etc.
+- DEMOGRAPHICATTRIBUTE: Demographic attributes of a person, such as native language, descent, heritage, ethnicity, nationality, religious or political group, birthmarks, ages, sexual orientation, gender and sex
+- TIME: Description of a specific date, time, or duration
+- HEALTHINFORMATION: Details concerning an individual’s health status, medical conditions, treatment records, and health insurance information
+- FINANCIALINFORMATION: Financial details such as bank account numbers, credit card numbers, investment records, salary information, and other financial statuses or activities
+- EDUCATIONALRECORD: Educational background details, including academic records, transcripts, degrees, and certification
+`;
 
 // Function to analyze text sensitivity using OpenAI
 async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
-  const userCategories = await getUserSelectedCategories();
-  const categories =
-    userCategories.length > 0 ? userCategories : GDPR_CATEGORIES;
+  console.log('before getting userSelectedtaxonomy');
+  const taxonomy = await getUserSelectedTaxonomy();
+  // const categories =
+  //   userCategories.length > 0 ? userCategories : GDPR_CATEGORIES;
 
-  console.log(`categories sent `, categories);
-  const prompt = `
-      Analyze if the following search query contains or implies personal information that is considered sensitive according to user-defined preferences.
-      Consider ONLY the following categories as sensitive, as per user preferences: ${categories.join(
-        ', '
-      )}.
+  console.log(`taxonomy sent `, taxonomy);
+  const systemPrompt = `
+You are an expert in cybersecurity and data privacy. You are now tasked to detect PII from the given text, using the following taxonomy:
+${taxonomy}`;
+  console.log(systemPrompt);
+  const userPrompt = `
+User Search Query: ${query}
+For the given search query that a user sends to a search engine, identify all the personally identifiable information using the above taxonomy only. The entity_type should be selected from the all-caps categories.
 
-      Query: "${query}"
+Note that the information should be related to a real person not in a public context, but okay if not uniquely identifiable. Result should be in its minimum possible unit.
 
-      If the query does not match any of the specified categories, respond with "isSensitive: false".
-      Otherwise, respond in JSON format with:
-      - isSensitive (boolean, true only if it matches at least one category)
-      - categories (array of matched categories)
-      - confidence (number between 0 and 1)
-      - explanation (brief explanation)
-      - sanitizedQuery (string, a version of the query where sensitive information is removed or abstracted, using replacement or abstraction techniques)
-      - sensitiveTerms (array of objects), each with:
-        - term (string, the sensitive term)
-        - category (string, the category it matches)
-        - startIndex (number, the starting index of the term in the query)
-        - endIndex (number, the ending index of the term in the query)
-      Only provide the JSON, no other text.
-    `;
+For each detected entity, provide:
+- "entity_type": the category from the taxonomy
+- "text": the exact text of the entity in the message
+- "replace": the placeholder in the format "[CATEGORY]"
+- "abstract": an abstracted version of the entity (e.g., generalization)
 
+Return ONLY a JSON in the following format:
+{
+  "isSensitive": true (true only if it matches at least one category) or false,
+  "results": [
+    {
+      "entity_type": "CATEGORY",
+      "text": "DETECTED_ENTITY_TEXT",
+      "replace": "[CATEGORY]",
+      "abstract": "ABSTRACTED_VERSION"
+    },
+    ...
+  ]
+}
+`;
+  console.log(userPrompt);
   try {
-    console.log('Making OpenAI request for query:', query);
+    console.log('Making OpenAI request for query:', userPrompt);
     const completion = await fetch(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -74,21 +127,18 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
           messages: [
             {
               role: 'system',
-              content:
-                'You are an expert in cybersecurity and data privacy, specializing in GDPR compliance analysis. Respond only in valid JSON format and avoid adding any explanatory text outside the JSON response.',
+              content: systemPrompt,
             },
             {
               role: 'user',
-              content: prompt,
+              content: userPrompt,
             },
           ],
-          max_tokens: 250,
+          max_tokens: 10000,
         }),
       }
     );
-    console.log('after making request');
-
-    console.log(completion);
+    console.log('after making request, completion: ', completion);
     if (!completion.ok) {
       throw new Error(`API request failed: ${completion.statusText}`);
     }
@@ -102,12 +152,13 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
 
     // Remove the backticks if they are present
     const content = data.choices[0].message.content
-      .replace(/```json\n/, '')
-      .replace(/```$/, '')
+      .replace(/```json\s*([\s\S]*?)```/g, '$1')
       .trim();
+    console.log('Assistant content:', content);
 
     try {
       const result = JSON.parse(content);
+      console.log('Parsed JSON:', result);
       return result as SensitivityAnalysis;
     } catch (parseError) {
       console.error('Error parsing JSON:', parseError);
@@ -118,21 +169,76 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
     // Return a safe default in case of error
     return {
       isSensitive: true, // Err on the side of caution
-      categories: ['Error in analysis'],
-      confidence: 1,
-      explanation:
-        'Error during sensitivity analysis, treating as sensitive for safety',
-      sanitizedQuery: '',
+      results: [],
     };
   }
 }
-console.log('Background script loaded');
+
+async function abstractSensitiveInformation(
+  text: string,
+  entities: SensitivityTerm[]
+): Promise<string> {
+  const protectedInfo = entities.map((e) => e.text).join(', ');
+
+  const systemPrompt = `Rewrite the text to abstract the protected information, and don't change other parts, directly return the text in JSON format: {"text": REWRITE_TEXT}`;
+
+  const userPrompt = `[User:] Text: ${text}\nProtected information: ${protectedInfo}`;
+
+  try {
+    const completion = await fetch(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${OPEN_AI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini', // Use an appropriate model
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt,
+            },
+            {
+              role: 'user',
+              content: userPrompt,
+            },
+          ],
+          max_tokens: 10000,
+        }),
+      }
+    );
+
+    if (!completion.ok) {
+      throw new Error(`API request failed: ${completion.statusText}`);
+    }
+
+    const data = await completion.json();
+
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid API response format');
+    }
+
+    const content = data.choices[0].message.content
+      .replace(/```json\n?/g, '')
+      .replace(/```$/g, '')
+      .trim();
+
+    const result = JSON.parse(content);
+
+    return result.text as string;
+  } catch (error) {
+    console.error('Error during abstraction:', error);
+    return text; // Return original text if abstraction fails
+  }
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Background received message:', message);
 
   if (message.type === 'CHECK_SENSITIVITY') {
-    console.log('Processing CHECK_SENSITIVITY message');
+    console.log('Processing CHECK_SENSITIVITY message', message.query);
     (async () => {
       try {
         const analysis = await analyzeSensitivity(message.query);
@@ -141,7 +247,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           isSensitive: analysis.isSensitive,
           analysis: analysis,
         });
-        console.log('Sent response back to content script');
+        console.log('Sent response back to content script', analysis);
       } catch (error) {
         console.error('Error in message handler:', error);
         sendResponse({
@@ -152,24 +258,59 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     })();
     console.log('Sent response back to content script');
+  } else if (message.type === 'ABSTRACT_SENSITIVE_INFO') {
+    console.log('Processing ABSTRACT_SENSITIVE_INFO message');
+    (async () => {
+      try {
+        const abstractedText = await abstractSensitiveInformation(
+          message.text,
+          message.entities
+        );
+        sendResponse({
+          success: true,
+          abstractedText,
+        });
+        console.log('Sent abstracted text back to content script');
+      } catch (error) {
+        console.error('Error in abstraction handler:', error);
+        sendResponse({
+          success: false,
+          error: 'Error processing abstraction request',
+        });
+      }
+    })();
   }
-
   return true; // Keep message channel open for async response
 });
 
-// Function to fetch user-selected sensitive categories
-async function getUserSelectedCategories(): Promise<string[]> {
+async function getUserSelectedTaxonomy(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(['sensitiveCategories'], (result) => {
-      if (result.sensitiveCategories) {
-        resolve(result.sensitiveCategories);
-      } else {
-        resolve([]); // Default to empty if no categories are selected
+      const selectedCategories = result.sensitiveCategories || [];
+
+      // Build taxonomy based on selected categories
+      let taxonomy = '';
+      selectedCategories.forEach((category: string) => {
+        const taxonomyCategories = CATEGORY_MAPPING[category];
+        if (taxonomyCategories) {
+          taxonomyCategories.forEach((taxCategory) => {
+            const definition = TAXONOMY_DEFINITIONS[taxCategory];
+            taxonomy += `- ${taxCategory}: ${definition}\n`;
+          });
+        }
+      });
+
+      // If no categories selected, include all
+      if (!taxonomy) {
+        taxonomy = Object.keys(TAXONOMY_DEFINITIONS)
+          .map((key) => `- ${key}: ${TAXONOMY_DEFINITIONS[key]}`)
+          .join('\n');
       }
+
+      resolve(taxonomy);
     });
   });
 }
-
 async function isDataMinimizationEnabled(): Promise<boolean> {
   return new Promise((resolve) => {
     chrome.storage.local.get(['enableDataMinimization'], (result) => {
@@ -244,7 +385,7 @@ function compareDataCollection(
       sensitiveDataPoints.push({
         type: 'header',
         name: header.name,
-        value: header.value,
+        value: header.value || '',
         purpose: 'Provides user/device information',
       });
     }

@@ -2,36 +2,82 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 
+import PrimeReact from 'primereact/api';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Checkbox } from 'primereact/checkbox';
 import { Message } from 'primereact/message';
-import React, { useEffect, useState } from 'react';
+import { Toast } from 'primereact/toast';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './option.css';
 
 const CATEGORIES = [
-  'Personal identification',
-  'Financial information',
-  'Biometric data',
-  'Location data',
-  'Health information',
-  'Racial or ethnic origin',
-  'Political opinions',
-  'Religious beliefs',
-  'Sexual orientation',
-  'Trade-Union membership',
+  {
+    name: 'Personal identification',
+    description:
+      'Name, address, email, phone number, ID, online identity (e.g., usernames, IP addresses, passwords).',
+  },
+  {
+    name: 'Financial information',
+    description:
+      'Details such as bank accounts, credit cards, investment records, salary information, and other financial activities.',
+  },
+  {
+    name: 'Biometric data',
+    description:
+      'Data derived from biometric identifiers, including fingerprints, facial recognition data, retinal scans, voice patterns, and other unique physical characteristics.',
+  },
+  {
+    name: 'Location data',
+    description:
+      'Geographical information such as city, state, country, specific addresses, and places like landmarks or named infrastructures (e.g., bus stops, bridges).',
+  },
+  {
+    name: 'Health information',
+    description:
+      'Information related to an individual’s health status, medical history, treatment records, and health insurance data.',
+  },
+  {
+    name: 'Racial or ethnic origin',
+    description:
+      'Attributes describing a person’s race, ethnicity, nationality, heritage, or descent.',
+  },
+  {
+    name: 'Political opinions',
+    description:
+      'Expressions of political beliefs or affiliations, including support for political groups or ideologies.',
+  },
+  {
+    name: 'Religious beliefs',
+    description:
+      'Details related to an individual’s religious beliefs, affiliations, or participation in religious activities.',
+  },
+  {
+    name: 'Sexual orientation',
+    description:
+      'Information on an individual’s sexual orientation, preferences, or gender identity.',
+  },
+  {
+    name: 'Trade-Union membership',
+    description:
+      'Affiliation or membership information regarding trade unions, professional associations, or worker’s unions.',
+  },
 ];
 
 const Options = () => {
-  const [selectedCategories, setSelectedCategories] =
-    useState<string[]>(CATEGORIES);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    CATEGORIES.map((c) => c.name)
+  );
   const [enableSanitization, setEnableSanitization] = useState<boolean>(false);
   const [enableDataMinimization, setEnableDataMinimization] =
     useState<boolean>(false);
   const [showRecentSearches, setShowRecentSearches] = useState<boolean>(true);
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
+    PrimeReact.ripple = true;
+
     chrome.storage.local.get(
       [
         'sensitiveCategories',
@@ -69,13 +115,19 @@ const Options = () => {
         showRecentSearches,
       },
       () => {
-        alert('Preferences saved successfully!');
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Preferences saved successfully!',
+          life: 3000,
+        });
       }
     );
   };
 
   return (
     <div className="options-container">
+      <Toast ref={toast} />
       <Card title="Privacy Preferences" className="options-card">
         <p>Select the categories you consider sensitive:</p>
         {selectedCategories.length === CATEGORIES.length && (
@@ -87,15 +139,19 @@ const Options = () => {
         )}
         <div className="category-list">
           {CATEGORIES.map((category) => (
-            <div key={category} className="category-item">
+            <div key={category.name} className="category-item">
               <Checkbox
-                inputId={category}
-                value={category}
-                onChange={() => onCategoryChange(category)}
-                checked={selectedCategories.includes(category)}
+                inputId={category.name}
+                value={category.name}
+                onChange={() => onCategoryChange(category.name)}
+                checked={selectedCategories.includes(category.name)}
               />
-              <label htmlFor={category} className="category-label">
-                {category}
+              <label htmlFor={category.name} className="category-label">
+                {category.name}
+                <i
+                  className="pi pi-info-circle"
+                  title={category.description}
+                ></i>
               </label>
             </div>
           ))}
