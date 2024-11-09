@@ -25,5 +25,11 @@
     }
   ],
   "permissions": ["webRequest", "storage", "tabs", "activeTab", "cookies"],
-  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"]
+  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["contentScript.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

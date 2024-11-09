@@ -4,6 +4,8 @@ interface SensitivityTerm {
   category: string;
   startIndex: number;
   endIndex: number;
+  replace: string;
+  abstract: string;
 }
 // Sensitivity analysis result interface
 interface SensitivityAnalysis {
@@ -52,10 +54,13 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
       - explanation (brief explanation)
       - sanitizedQuery (string, a version of the query where sensitive information is removed or abstracted, using replacement or abstraction techniques)
       - sensitiveTerms (array of objects), each with:
-        - term (string, the sensitive term)
-        - category (string, the category it matches)
-        - startIndex (number, the starting index of the term in the query)
-        - endIndex (number, the ending index of the term in the query)
+          - term (string, the sensitive term)
+          - category (string, the category it matches)
+          - startIndex (number, the starting index of the term in the query)
+          - endIndex (number, the ending index of the term in the query)
+          - replace (string, the term replaced with a placeholder, e.g., "[CATEGORY]")
+          - abstract (string, an abstracted version of the term)
+
       Only provide the JSON, no other text.
     `;
 
@@ -243,8 +248,8 @@ function compareDataCollection(
     ) {
       sensitiveDataPoints.push({
         type: 'header',
-        name: header.name,
-        value: header.value,
+        name: header.name || '',
+        value: header.value || '',
         purpose: 'Provides user/device information',
       });
     }
