@@ -8,6 +8,7 @@ import { Card } from 'primereact/card';
 import { Checkbox } from 'primereact/checkbox';
 import { Message } from 'primereact/message';
 import { Toast } from 'primereact/toast';
+import { Tooltip } from 'primereact/tooltip';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './option.css';
@@ -148,9 +149,11 @@ const Options = () => {
               />
               <label htmlFor={category.name} className="category-label">
                 {category.name}
+                <Tooltip target=".custom-target-icon" />
                 <i
-                  className="pi pi-info-circle"
-                  title={category.description}
+                  className="custom-target-icon pi pi-info-circle p-text-secondary p-overlay-badge"
+                  data-pr-tooltip={category.description}
+                  data-pr-position="right"
                 ></i>
               </label>
             </div>
@@ -165,6 +168,13 @@ const Options = () => {
           />
           <label htmlFor="enableSanitization" className="feature-label">
             Enable Query Sanitization
+            <Tooltip target=".sanitization-tooltip" />
+            <i
+              className="sanitization-tooltip pi pi-info-circle p-text-secondary"
+              data-pr-tooltip="Automatically identifies and opens a dialog to keep/replace sensitive terms in your search query before submission."
+              data-pr-position="right"
+              style={{ marginLeft: '4px' }}
+            ></i>
           </label>
         </div>
         <div className="feature-toggle">
@@ -175,6 +185,13 @@ const Options = () => {
           />
           <label htmlFor="enableDataMinimization" className="feature-label">
             Enable Data Minimization Alert
+            <Tooltip target=".data-minimization-tooltip" />
+            <i
+              className="data-minimization-tooltip pi pi-info-circle p-text-secondary"
+              data-pr-tooltip="Alerts you when unnecessary data is collected by search engines."
+              data-pr-position="right"
+              style={{ marginLeft: '4px' }}
+            ></i>
           </label>
         </div>
         <div className="feature-toggle">
@@ -185,6 +202,13 @@ const Options = () => {
           />
           <label htmlFor="showRecentSearches" className="feature-label">
             Show Recent Searches in Popup
+            <Tooltip target=".recent-searches-tooltip" />
+            <i
+              className="recent-searches-tooltip pi pi-info-circle p-text-secondary"
+              data-pr-tooltip="Displays a history of your recent searches in a popup for quick access."
+              data-pr-position="right"
+              style={{ marginLeft: '4px' }}
+            ></i>
           </label>
         </div>
         <Button

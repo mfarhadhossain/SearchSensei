@@ -3,16 +3,27 @@
   justify-content: center;
   padding: 16px;
   font-family: Arial, sans-serif;
+  background-color: #e3f2fd; /* Light background for entire page */
+  min-height: 100vh; /* Ensures full height */
+  background-image: url('https://img.freepik.com/free-photo/colorful-abstract-textured-background-design_53876-108265.jpg?t=st=1731262534~exp=1731266134~hmac=12ae25ad3b59bea5667587ef928cfbc26a9c52ee5500c9af7bcbfb7b65781f4c&w=1060');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .options-card {
   width: 100%;
   max-width: 500px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  border-radius: 16px;
+  padding: 8px;
 }
 
 .category-list {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 0.5rem;
   margin-top: 1rem;
 }
@@ -24,6 +35,7 @@
 
 .category-label {
   margin-left: 8px;
+  margin-right: 8px;
 }
 
 .save-button {
@@ -47,4 +59,7 @@
 
 .p-card-content {
   padding: 0 !important;
+}
+.custom-target-icon {
+  margin-left: 4px;
 }
