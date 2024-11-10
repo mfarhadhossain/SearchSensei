@@ -5,10 +5,11 @@
   font-family: Arial, sans-serif;
   background-color: #e3f2fd; /* Light background for entire page */
   min-height: 100vh; /* Ensures full height */
-  background-image: url('https://img.freepik.com/free-photo/colorful-abstract-textured-background-design_53876-108265.jpg?t=st=1731262534~exp=1731266134~hmac=12ae25ad3b59bea5667587ef928cfbc26a9c52ee5500c9af7bcbfb7b65781f4c&w=1060');
+  background-image: url('../static/colorful-abstract-textured-background-design.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  background-attachment: fixed;
 }
 
 .options-card {
@@ -60,6 +61,14 @@
 .p-card-content {
   padding: 0 !important;
 }
+
 .custom-target-icon {
   margin-left: 4px;
+}
+
+.category-icon {
+  margin-right: 8px;
+  margin-left: 4px;
+  color: #007ad9; /* Customize the icon color as desired */
+  font-size: 1em; /* Adjust icon size if needed */
 }

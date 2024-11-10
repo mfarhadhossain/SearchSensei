@@ -1,7 +1,15 @@
 /* General dialog container styling */
 .p-dialog .p-dialog-content {
+  max-height: 90vh; /* Set max height for dialog content */
+  overflow-y: auto; /* Enable scrolling within the dialog if content overflows */
   padding: 1rem;
   font-family: Arial, sans-serif;
+}
+
+.p-dialog {
+  border-radius: 16px;
+  background-color: #e3f2fd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Header and preview styling */
@@ -29,8 +37,12 @@
 .p-field label {
   font-weight: 600;
   color: #0d47a1;
-  display: block;
-  margin-bottom: 0.3rem;
+  /* display: block; */
+  /* margin-bottom: 0.3rem; */
+  /* added */
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Dropdown styling */
@@ -52,6 +64,10 @@
   color: white;
 }
 
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+}
 /* Footer button styling */
 .p-dialog-footer .p-button {
   margin-right: 0.5rem;

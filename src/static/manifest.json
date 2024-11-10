@@ -36,5 +36,11 @@
   "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["static/colorful-abstract-textured-background-design.jpg"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

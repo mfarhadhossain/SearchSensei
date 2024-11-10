@@ -105,8 +105,23 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
       modal
       onHide={onCancel}
       footer={footer}
-      style={{ width: '500px', maxWidth: '90vw' }}
-      contentStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
+      style={{
+        width: '600px',
+        minWidth: '400px',
+        maxWidth: '90vw',
+        borderRadius: '12px',
+        overflow: 'hidden',
+      }}
+      contentStyle={{
+        minHeight: '400px',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+      }}
+      breakpoints={{
+        '1024px': '75vw',
+        '768px': '90vw',
+        '480px': '95vw',
+      }}
     >
       <p>
         We've detected sensitive information in your query. Please choose how to
@@ -121,7 +136,10 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
             id={`term-${index}`}
             value={userChoices[termInfo.text]}
             options={[
-              { label: `Keep ("${termInfo.text}")`, value: 'keep' },
+              {
+                label: `Keep ("${termInfo.text}")`,
+                value: 'keep',
+              },
               {
                 label: `Replace with "[${termInfo.entity_type}]"`,
                 value: 'replace',
