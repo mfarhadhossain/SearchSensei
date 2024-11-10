@@ -22,7 +22,7 @@ const App = () => {
 
   const SEARCH_SELECTORS = {
     google: "input[name='q'], textarea[name='q'], input[id='input']",
-    bing: "input[name='q']",
+    bing: "input[name='q'], input[id='sb_form_q']",
     duckduckgo: "input[name='q']",
   };
 

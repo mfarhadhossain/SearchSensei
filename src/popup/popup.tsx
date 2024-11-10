@@ -1,3 +1,4 @@
+import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
 
 import { Card } from 'primereact/card';
@@ -65,11 +66,21 @@ const Popup = () => {
 
   return (
     <div className="popup-container">
-      <Card title="Search Sensei" className="popup-card">
+      <div className="centered-header-wrapper">
+        <div className="header-container">
+          <h2 className="popup-title">Search Sensei</h2>
+        </div>
+      </div>
+      <Card className="popup-card">
         {showDataMinimizationAlerts && personalDataPoints.length > 0 && (
           <div className="data-minimization-section">
-            <h3>Data Minimization Alert</h3>
-            <p>The following data may be unnecessary for your search:</p>
+            <div className="data-minimization-header">
+              <i className="pi pi-exclamation-triangle alert-icon" />
+              <span className="alert-title">Data Minimization Alert:</span>
+              <span className="alert-description">
+                The following data may be unnecessary for your search
+              </span>
+            </div>
             <DataTable
               value={personalDataPoints}
               responsiveLayout="scroll"
@@ -107,7 +118,7 @@ const Popup = () => {
 
         {showRecentSearches ? (
           <>
-            <p>Your recent queries:</p>
+            <p className="recent-queries-text">Your recent queries:</p>
             {queryHistory.length > 0 ? (
               <ListBox
                 value={null}
@@ -117,11 +128,13 @@ const Popup = () => {
                 className="query-listbox"
               />
             ) : (
-              <p>No recent queries found.</p>
+              <p className="no-queries-text">No recent queries found.</p>
             )}
           </>
         ) : (
-          <p>Recent searches are disabled in options.</p>
+          <p className="no-queries-text">
+            Recent searches are disabled in options.
+          </p>
         )}
       </Card>
     </div>

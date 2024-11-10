@@ -33,7 +33,12 @@
     "alarms",
     "contextMenus"
   ],
-  "host_permissions": ["https://api.openai.com/*", "*://*.google.com/*"],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "*://*.google.com/*",
+    "*://*.bing.com/*",
+    "*://*.duckduckgo.com/*"
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },

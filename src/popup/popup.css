@@ -11,6 +11,27 @@
   background-position: center;
   background-attachment: fixed;
 }
+
+.header-container {
+  display: inline-block;
+  text-align: center;
+  padding: 8px 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  margin: 0 auto;
+}
+
+.centered-header-wrapper {
+  text-align: center;
+}
+
+.popup-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4b5563;
+  margin: 0;
+}
+
 .p-card .p-card-body {
   padding: 1rem !important;
   background-image: url('../static/colorful-abstract-textured-background-design.jpg');
@@ -19,8 +40,8 @@
   background-position: center;
   background-attachment: fixed;
 }
+
 .popup-card {
-  /* padding: 8px; */
   width: 100%;
   background-color: #e3f2fd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -29,16 +50,14 @@
 }
 
 .popup-description {
-  /* margin-bottom: 6px;
-  font-size: 12px; */
   margin-bottom: 6px;
-  font-size: 8px;
+  font-size: 12px;
   color: #0d47a1;
 }
 
 .query-listbox {
   margin-top: 6px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .query-item {
@@ -49,21 +68,16 @@
 }
 
 .query-tag {
-  /* font-size: 10px */
-  font-size: 6px;
+  font-size: 12px;
   padding: 2px 4px;
   border-radius: 4px;
 }
 .query-tag.sensitive {
-  /* background-color: #ffcccc;
-  color: #cc0000; */
   background-color: #ffebee;
   color: #d32f2f;
 }
 
 .query-tag.non-sensitive {
-  /* background-color: #ccffcc;
-  color: #009900; */
   background-color: #e8f5e9;
   color: #388e3c;
 }
@@ -74,9 +88,37 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.data-minimization-header {
+  display: inline-block;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d32f2f;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 8px 8px;
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  color: #d32f2f;
+  margin-right: 4px;
+}
+
+.alert-title {
+  color: #d32f2f;
+  margin-right: 4px;
+}
+
+.alert-description {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
 .data-minimization-section {
   margin-bottom: 16px;
-  font-size: 10px;
+  font-size: 12px;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -84,21 +126,33 @@
 .data-table {
   margin-top: 8px;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .data-table .p-datatable-tbody > tr > td {
   padding: 4px 6px; /* Compact cell padding */
 }
+
 .masked-value {
   font-family: monospace;
   color: #555;
 }
 
 .disclaimer {
-  /* font-size: 12px; */
   color: #888;
   margin-top: 4px;
-  font-size: 8px;
+  font-size: 12px;
   text-align: center;
+}
+
+.recent-queries-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.no-queries-text {
+  font-size: 0.9rem;
+  color: #555;
 }

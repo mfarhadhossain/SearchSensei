@@ -3,8 +3,8 @@
   justify-content: center;
   padding: 16px;
   font-family: Arial, sans-serif;
-  background-color: #e3f2fd; /* Light background for entire page */
-  min-height: 100vh; /* Ensures full height */
+  background-color: #e3f2fd;
+  min-height: 100vh;
   background-image: url('../static/colorful-abstract-textured-background-design.jpg');
   background-size: cover;
   background-repeat: no-repeat;
@@ -15,8 +15,8 @@
 .options-card {
   width: 100%;
   max-width: 500px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   padding: 8px;
 }
@@ -69,6 +69,6 @@
 .category-icon {
   margin-right: 8px;
   margin-left: 4px;
-  color: #007ad9; /* Customize the icon color as desired */
-  font-size: 1em; /* Adjust icon size if needed */
+  color: #007ad9;
+  font-size: 1em;
 }
