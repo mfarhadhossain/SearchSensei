@@ -113,21 +113,9 @@ You have two options:
 
 ## Using SearchSensei
 
-After installing SearchSensei:
+**User Guide**
 
-1. **Interact with Search Engines**:
-
-   - When you enter a search query on supported search engines (e.g., Google, Bing, DuckDuckGo), SearchSensei will analyze your input.
-
-2. **Handle Sensitive Terms**:
-
-   - If sensitive terms are detected, a dialog will appear, allowing you to choose how to handle each term:
-     - **Keep**: Leave the term as is.
-     - **Replace**: Replace the term with a placeholder.
-     - **Abstract**: Replace the term with a generalized version.
-
-3. **Data Minimization Alerts**:
-   - SearchSensei will alert you if it detects that the search engine is collecting more data than necessary.
+For an in-depth user guide on using SearchSensei’s features, click here to visit the [User Guide](USER_GUIDE.md)
 
 ## Additional Information
 
