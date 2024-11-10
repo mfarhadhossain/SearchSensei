@@ -108,6 +108,8 @@ You have two options:
 
 4. **Verify the Extension is Loaded**:
    - You should now see SearchSensei listed among your Chrome extensions.
+5. **Pin the Extension**:
+   - Locate the extension icon in Chrome’s toolbar, click the puzzle piece icon (extensions icon 🧩), and pin SearchSensei to ensure easy access.
 
 ## Using SearchSensei
 
@@ -154,7 +156,7 @@ After installing SearchSensei:
 
 SearchSensei is licensed for **personal, non-commercial use only**. Users are not permitted to copy, modify, publish, distribute, sublicense, or sell copies of this software.
 
-For full license terms, see the included [LICENSE](./LICENSE) file.
+For full license terms, see the included [LICENSE](./LICENSE.md) file.
 
 ---
 
