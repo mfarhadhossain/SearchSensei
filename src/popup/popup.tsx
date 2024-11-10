@@ -46,8 +46,8 @@ const Popup = () => {
         setShowRecentSearches(result.showRecentSearches ?? true);
         setShowDataMinimizationAlerts(result.enableDataMinimization ?? false);
         // set warning count 0
-        // chrome.action.setBadgeText({ text: '' });
-        // chrome.storage.local.set({ discrepancyCount: 0 });
+        chrome.action.setBadgeText({ text: '' });
+        chrome.storage.local.set({ discrepancyCount: 0 });
       }
     );
   }, []);
