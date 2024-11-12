@@ -1,14 +1,14 @@
+import React, { useEffect, useRef, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import React, { useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom/client';
 import SanitizerPanel from '../components/SanitizerPanel';
 import { SensitivityTerm } from '../types';
 
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/saga-blue/theme.css'; // Choose your theme
+import 'primereact/resources/themes/saga-blue/theme.css';
 import './contentScript.css';
 
 const App = () => {
@@ -27,16 +27,14 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log(`Inside useEffect`);
 
     let retryTimeout: number;
 
     const handleKeyDown = async (event: KeyboardEvent) => {
-      console.log('handleKeyDown triggered', event);
 
       const inputElement = searchInputRef.current;
+
       if (inputElement) {
-        console.log(`inputElement` + inputElement);
         if (event.key === 'Enter' && inputElement.value.trim()) {
           event.preventDefault();
           event.stopPropagation();
@@ -46,7 +44,6 @@ const App = () => {
           try {
             setLoading(true);
             const enableSanitization = await getEnableSanitization();
-            console.log(enableSanitization);
 
             setEnableSanitization(enableSanitization);
 
@@ -76,7 +73,6 @@ const App = () => {
                     setShowWarningModal(true);
                   } else if (isSensitive == false) {
                     // If not sensitive, proceed with the search
-                    console.log(`Not sensitive`);
                     inputElement!.form?.submit();
                   }
                 }
@@ -84,7 +80,6 @@ const App = () => {
             );
           } catch (error) {
             setLoading(false);
-            console.error('Error in sensitivity check:', error);
             // Allow search to proceed if there's an error
             inputElement!.form?.submit();
           }
@@ -100,11 +95,9 @@ const App = () => {
       }
 
       if (!inputElement) {
-        console.log('Search input not found, retrying...');
         retryTimeout = window.setTimeout(findSearchInput, 500);
         return;
       }
-      console.log('Search input found:', inputElement);
 
       searchInputRef.current = inputElement;
       inputElement.addEventListener('keydown', handleKeyDown);
@@ -194,21 +187,37 @@ const App = () => {
             <div>
               <Button
                 label="Cancel"
-                icon="pi pi-times"
-                className="p-button-text"
+                severity="danger"
+                className="p-button-cancel"
                 onClick={handleWarningCancel}
               />
               <Button
                 label="Proceed"
-                icon="pi pi-check"
+                severity="success"
                 onClick={handleWarningConfirm}
+                className="p-button-confirm"
                 autoFocus
               />
             </div>
           }
+          className="warning-dialog"
+          style={{
+            minWidth: '300px',
+            maxWidth: '90vw',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+          }}
+          contentStyle={{
+            padding: '1rem',
+            color: '#0d47a1',
+          }}
+          breakpoints={{
+            '1024px': '75vw',
+            '768px': '90vw',
+            '480px': '95vw',
+          }}
         >
           <p>
-            Warning: Your search query contains sensitive information. Do you
+            Your search query contains sensitive information. Do you
             want to proceed?
           </p>
         </Dialog>
@@ -219,4 +228,3 @@ const App = () => {
 const root = document.createElement('div');
 document.body.appendChild(root);
 ReactDOM.createRoot(root).render(<App />);
-// ReactDOM.render(<App />, root);

@@ -72,6 +72,7 @@
   padding: 2px 4px;
   border-radius: 4px;
 }
+
 .query-tag.sensitive {
   background-color: #ffebee;
   color: #d32f2f;
@@ -81,6 +82,7 @@
   background-color: #e8f5e9;
   color: #388e3c;
 }
+
 .query-text {
   flex: 1;
   margin-right: 10px;

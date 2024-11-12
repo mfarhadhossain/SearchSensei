@@ -1,79 +1,74 @@
 /* General dialog container styling */
-.p-dialog .p-dialog-content {
-  max-height: 90vh; /* Set max height for dialog content */
-  overflow-y: auto; /* Enable scrolling within the dialog if content overflows */
-  padding: 1rem;
-  font-family: Arial, sans-serif;
-}
-
-.p-dialog {
+.sanitizer-dialog .p-dialog {
   border-radius: 16px;
   background-color: #e3f2fd;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Header and preview styling */
-.query-preview {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #e3f2fd; /* Light blue background */
-  border-radius: 8px;
-  border: 1px solid #90caf9; /* Blue border */
+.sanitizer-dialog .p-dialog-content {
+    max-height: 90vh; /* Set max height for dialog content */
+    overflow-y: auto; /* Enable scrolling within the dialog if content overflows */
+    padding: 1rem;
+    font-family: Arial, sans-serif;
 }
 
-.query-preview h4 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: #1976d2; /* Darker blue */
-}
-
-.query-preview p {
-  margin: 0.5rem 0 0;
-  color: #0d47a1; /* Even darker blue */
-  font-style: italic;
-}
-
-/* Label for each term */
-.p-field label {
-  font-weight: 600;
-  color: #0d47a1;
-  /* display: block; */
-  /* margin-bottom: 0.3rem; */
-  /* added */
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Dropdown styling */
-.p-inputgroup {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.p-dropdown {
-  width: 100%;
-}
-
-.p-dropdown .p-dropdown-label {
-  color: #0d47a1;
-}
-
-.p-dropdown .p-dropdown-trigger {
-  background-color: #1976d2;
-  color: white;
-}
-
-.p-dialog .p-dialog-header .p-dialog-title {
+.sanitizer-dialog .p-dialog-header .p-dialog-title {
   font-weight: 700 !important;
   font-size: 1.5rem !important;
 }
-/* Footer button styling */
-.p-dialog-footer .p-button {
-  margin-right: 0.5rem;
+
+.sanitizer-dialog .query-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #e3f2fd; /* Light blue background */
+    border-radius: 8px;
+    border: 1px solid #90caf9; /* Blue border */
 }
 
-.p-button:hover {
-  background-color: #1565c0;
-  border-color: #1565c0;
+.sanitizer-dialog .query-preview h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1976d2; /* Darker blue */
+}
+
+.sanitizer-dialog .query-preview p {
+    margin: 0.5rem 0 0;
+    color: #0d47a1; /* Even darker blue */
+    font-style: italic;
+}
+
+/* Label for each term */
+.sanitizer-dialog .p-field label {
+    font-weight: 600;
+    color: #0d47a1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sanitizer-dialog .p-inputgroup {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.sanitizer-dialog .p-dropdown {
+    width: 100%;
+}
+
+.sanitizer-dialog .p-dropdown .p-dropdown-label {
+    color: #0d47a1;
+}
+
+.sanitizer-dialog .p-dropdown .p-dropdown-trigger {
+    background-color: #1976d2;
+    color: white;
+}
+
+.sanitizer-dialog .p-dialog-footer .p-button {
+    margin-right: 0.5rem;
+}
+
+.sanitizer-dialog .p-button:hover {
+    background-color: #1565c0;
+    border-color: #1565c0;
 }

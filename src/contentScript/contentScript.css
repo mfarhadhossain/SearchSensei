@@ -1,63 +1,24 @@
-/* Basic styling for custom modal */
-.custom-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+/* Scoped style for the warning dialog to match SanitizerPanel */
+.warning-dialog .p-dialog-content {
+  /*background-color: #e3f2fd; !* Light blue background *!*/
+  /*border-radius: 12px; !* Consistent rounded corners *!*/
+  padding: 1rem;
+  color: #0d47a1;
+  font-family: Arial, sans-serif;
 }
 
-.custom-modal-content {
-  background-color: white !important;
-  color: black !important;
-  padding: 20px;
-  border-radius: 8px;
-  width: 50%;
-  max-width: 80%;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  margin: 10% auto;
-  max-width: 500px;
+.warning-dialog .p-dialog {
+  border-radius: 16px !important;
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.warning-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1976d2;
 }
 
-.custom-modal-content button {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.custom-modal-content text {
-  color: red !important;
-}
-
-#confirm-btn {
-  background-color: #4caf50;
-  color: white;
-}
-
-#cancel-btn {
-  background-color: #f44336;
-  color: white;
-}
-.term-item {
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
-}
-
-.term-item p {
-  margin: 0 0 5px 0;
-}
-
-.term-item button {
-  margin-right: 5px;
-}
-/* Loading overlay styles */
+/* Loading overlay (not scoped since it’s general) */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -68,5 +29,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000 !important;
+  z-index: 1000;
+}
+
+.warning-dialog .p-dialog-footer .p-button {
+  margin-right: 0.5rem;
+}
+
+.warning-dialog .p-button:hover {
+  background-color: #1565c0;
+  border-color: #1565c0;
 }
