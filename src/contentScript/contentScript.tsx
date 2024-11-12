@@ -20,6 +20,7 @@ const App = () => {
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Selectors for search input elements on different search engines
   const SEARCH_SELECTORS = {
     google: "input[name='q'], textarea[name='q'], input[id='input']",
     bing: "input[name='q'], input[id='sb_form_q']",
@@ -30,6 +31,7 @@ const App = () => {
 
     let retryTimeout: number;
 
+    // Handles the 'Enter' key press event on the search input
     const handleKeyDown = async (event: KeyboardEvent) => {
 
       const inputElement = searchInputRef.current;
@@ -47,6 +49,7 @@ const App = () => {
 
             setEnableSanitization(enableSanitization);
 
+            // Sends a message to the background script to check query sensitivity
             chrome.runtime.sendMessage(
               { type: 'CHECK_SENSITIVITY', query },
               (response) => {
@@ -57,7 +60,7 @@ const App = () => {
                   const sensitiveTerms: SensitivityTerm[] =
                     response.analysis?.results || [];
 
-                  // Update query history
+                  // Updates query history in local storage
                   chrome.storage.local.get(['queryHistory'], (result) => {
                     const history = result.queryHistory || [];
                     history.unshift({ query, isSensitive });
@@ -65,14 +68,16 @@ const App = () => {
                     chrome.storage.local.set({ queryHistory: history });
                   });
 
+                  // Shows the sanitizer panel if query is sensitive
                   if (isSensitive && enableSanitization) {
                     setOriginalQuery(query);
                     setSensitiveTerms(sensitiveTerms);
                     setShowSanitizerPanel(true);
                   } else if (isSensitive) {
+                    // Shows a warning modal if sanitization is disabled
                     setShowWarningModal(true);
                   } else if (isSensitive == false) {
-                    // If not sensitive, proceed with the search
+                    // Proceeds with the search if query is not sensitive
                     inputElement!.form?.submit();
                   }
                 }
@@ -87,6 +92,7 @@ const App = () => {
       }
     };
 
+    // Attempts to find the search input element on the page
     const findSearchInput = () => {
       let inputElement: HTMLInputElement | null = null;
       for (const selector of Object.values(SEARCH_SELECTORS)) {
@@ -106,6 +112,7 @@ const App = () => {
     findSearchInput();
 
     return () => {
+      // Cleanup on component unmount
       const inputElement = searchInputRef.current;
       if (inputElement) {
         inputElement.removeEventListener('keydown', handleKeyDown);
@@ -116,6 +123,7 @@ const App = () => {
     };
   }, []);
 
+  // Retrieves the sanitization setting from local storage
   const getEnableSanitization = async (): Promise<boolean> => {
     return new Promise((resolve) => {
       chrome.storage.local.get(
@@ -127,6 +135,7 @@ const App = () => {
     });
   };
 
+  // Handles confirmation from the sanitizer panel
   const handleSanitizerConfirm = (updatedQuery: string) => {
     const inputElement = searchInputRef.current;
 
@@ -137,6 +146,7 @@ const App = () => {
     setShowSanitizerPanel(false);
   };
 
+  // Handles cancellation from the sanitizer panel
   const handleSanitizerCancel = () => {
     const inputElement = searchInputRef.current;
 
@@ -146,6 +156,7 @@ const App = () => {
     setShowSanitizerPanel(false);
   };
 
+  // Handles confirmation from the warning modal
   const handleWarningConfirm = () => {
     const inputElement = searchInputRef.current;
     if (inputElement) {
@@ -154,6 +165,7 @@ const App = () => {
     setShowWarningModal(false);
   };
 
+  // Handles cancellation from the warning modal
   const handleWarningCancel = () => {
     const inputElement = searchInputRef.current;
     if (inputElement) {

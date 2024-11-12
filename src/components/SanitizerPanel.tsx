@@ -1,4 +1,3 @@
-// src/components/SanitizerPanel.tsx
 import React, {useEffect, useRef, useState} from 'react';
 import {SensitivityTerm} from '../types';
 import {Button} from 'primereact/button';
@@ -7,7 +6,7 @@ import {Dropdown} from 'primereact/dropdown';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
-import './SanitizerPanel.css'; // Custom styles if needed
+import './SanitizerPanel.css';
 
 
 interface SanitizerPanelProps {
@@ -29,7 +28,7 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
     const placeholders = useRef<{ [key: string]: string }>({});
 
     useEffect(() => {
-        // Initialize user choices
+        // Initializes user choices to 'keep' for all sensitive terms
         const initialChoices = sensitiveTerms.reduce((acc, term) => {
             acc[term.text] = 'keep'; // Default to 'Keep'
             return acc;
@@ -73,6 +72,7 @@ const SanitizerPanel: React.FC<SanitizerPanelProps> = ({
         setUpdatedQuery(newQuery);
     }, [userChoices, originalQuery, sensitiveTerms]);
 
+    // Handles user action selection for each sensitive term
     const handleChoiceChange = (termInfo: SensitivityTerm, action: string) => {
         setUserChoices((prevChoices) => ({
             ...prevChoices,

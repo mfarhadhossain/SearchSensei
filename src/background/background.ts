@@ -1,3 +1,4 @@
+// Placeholder for OpenAI API Key
 const OPEN_AI_API_KEY = 'Your_API_KEY';
 
 interface SensitivityTerm {
@@ -13,6 +14,7 @@ interface SensitivityAnalysis {
     results: SensitivityTerm[];
 }
 
+// Mapping of user-friendly categories to taxonomy codes
 const CATEGORY_MAPPING: { [key: string]: string[] } = {
     'Personal identification': [
         'NAME',
@@ -33,6 +35,7 @@ const CATEGORY_MAPPING: { [key: string]: string[] } = {
     'Trade-Union membership': ['TRADE_UNION_MEMBERSHIP'],
 };
 
+// Definitions for each taxonomy category
 const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
     NAME: 'Name',
     ADDRESS: 'Physical address',
@@ -65,7 +68,7 @@ const TAXONOMY_DEFINITIONS: { [key: string]: string } = {
     // Add other definitions as needed
 };
 
-// Function to analyze text sensitivity using OpenAI
+// Function to analyze text sensitivity using OpenAI's API
 async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
     const taxonomy = await getUserSelectedTaxonomy();
 
@@ -100,6 +103,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
         }`;
 
     try {
+        // Sends a request to OpenAI API for analysis
         const completion = await fetch(
             'https://api.openai.com/v1/chat/completions',
             {
@@ -159,6 +163,7 @@ async function analyzeSensitivity(query: string): Promise<SensitivityAnalysis> {
     }
 }
 
+// Function to abstract sensitive information using OpenAI's API
 async function abstractSensitiveInformation(
     text: string,
     entities: SensitivityTerm[]
@@ -219,6 +224,7 @@ async function abstractSensitiveInformation(
     }
 }
 
+// Listens for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.type === 'CHECK_SENSITIVITY') {
@@ -261,6 +267,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Keep message channel open for async response
 });
 
+// Retrieves user-selected taxonomy from local storage
 async function getUserSelectedTaxonomy(): Promise<string> {
     return new Promise((resolve) => {
         chrome.storage.local.get(['sensitiveCategories'], (result) => {
@@ -278,7 +285,7 @@ async function getUserSelectedTaxonomy(): Promise<string> {
                 }
             });
 
-            // If no categories selected, include all
+            // Includes all categories if none are selected
             if (!taxonomy) {
                 taxonomy = Object.keys(TAXONOMY_DEFINITIONS)
                     .map((key) => `- ${key}: ${TAXONOMY_DEFINITIONS[key]}`)
@@ -290,6 +297,7 @@ async function getUserSelectedTaxonomy(): Promise<string> {
     });
 }
 
+// Checks if data minimization is enabled
 async function isDataMinimizationEnabled(): Promise<boolean> {
     return new Promise((resolve) => {
         chrome.storage.local.get(['enableDataMinimization'], (result) => {
@@ -298,6 +306,7 @@ async function isDataMinimizationEnabled(): Promise<boolean> {
     });
 }
 
+// Determines if a request is a search query and identifies the search engine
 function isSearchQuery(details) {
   const url = new URL(details.url);
 
@@ -331,7 +340,7 @@ function isSearchQuery(details) {
   return null;
 }
 
-
+// Intercepts outgoing requests to monitor data collection
 chrome.webRequest.onBeforeSendHeaders.addListener(
     function (details) {
         if (isSearchQuery(details)) {
@@ -352,6 +361,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ['requestHeaders']
 );
 
+// Compares collected data with privacy policies
 function compareDataCollection(
     details: chrome.webRequest.WebRequestHeadersDetails,
     requestHeaders: chrome.webRequest.HttpHeader[],
@@ -364,8 +374,8 @@ function compareDataCollection(
     purpose: string;
   }[] = [];
 
-  // Check URL parameters
-  for (const [key, value] of urlParams.entries()) {
+    // Checks URL parameters for sensitive data
+    for (const [key, value] of urlParams.entries()) {
     if (['q', 'rlz', 'sxsrf', 'ei', 'geo', 'location'].includes(key)) {
 
       sensitiveDataPoints.push({
@@ -380,7 +390,7 @@ function compareDataCollection(
     }
   }
 
-  // Check request headers
+  // Check request headers for sensitive data
   for (const header of requestHeaders) {
     if (
         ['User-Agent', 'sec-ch-ua', 'sec-ch-ua-platform', 'Referer', 'X-Client-Data'].includes(header.name)
@@ -396,7 +406,8 @@ function compareDataCollection(
     }
   }
 
-  chrome.cookies.getAll({}, (cookies) => {
+    // Checks cookies for sensitive data
+    chrome.cookies.getAll({}, (cookies) => {
     cookies.forEach((cookie) => {
       if (['SID', 'HSID', 'SSID', 'NID', 'APISID', 'SAPISID', 'CONSENT'].includes(cookie.name)) {
         sensitiveDataPoints.push({
@@ -411,7 +422,8 @@ function compareDataCollection(
     });
   });
 
-  if (sensitiveDataPoints.length > 0) {
+    // Stores the alert data and updates the extension badge
+    if (sensitiveDataPoints.length > 0) {
     chrome.storage.local.set({
       dataMinimizationAlert: sensitiveDataPoints,
       discrepancyCount: sensitiveDataPoints.length,

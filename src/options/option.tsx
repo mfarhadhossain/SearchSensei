@@ -13,6 +13,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import './option.css';
 
+// List of privacy categories with descriptions and icons
 const CATEGORIES = [
   {
     name: 'Personal identification',
@@ -89,6 +90,7 @@ const Options = () => {
   useEffect(() => {
     PrimeReact.ripple = true;
 
+    // Loads user preferences from local storage
     chrome.storage.local.get(
         [
           'sensitiveCategories',
@@ -110,6 +112,7 @@ const Options = () => {
     );
   }, []);
 
+  // Handles changes in category selection
   const onCategoryChange = (category: string) => {
     const updatedCategories = selectedCategories.includes(category)
         ? selectedCategories.filter((c) => c !== category)
@@ -117,6 +120,7 @@ const Options = () => {
     setSelectedCategories(updatedCategories);
   };
 
+  // Saves user preferences to local storage
   const savePreferences = () => {
     chrome.storage.local.set(
         {

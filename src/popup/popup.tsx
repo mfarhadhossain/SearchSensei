@@ -1,5 +1,5 @@
-import 'primeicons/primeicons.css';
-import 'primereact/resources/themes/lara-light-cyan/theme.css';
+import React, {useEffect, useState} from 'react';
+import ReactDOM from 'react-dom/client';
 
 import {Card} from 'primereact/card';
 import {Column} from 'primereact/column';
@@ -7,8 +7,8 @@ import {DataTable} from 'primereact/datatable';
 import {ListBox} from 'primereact/listbox';
 import {Tag} from 'primereact/tag';
 
-import React, {useEffect, useState} from 'react';
-import ReactDOM from 'react-dom/client';
+import 'primeicons/primeicons.css';
+import 'primereact/resources/themes/lara-light-cyan/theme.css';
 import './popup.css';
 
 interface QueryHistory {
@@ -30,7 +30,7 @@ const Popup = () => {
     const [personalDataPoints, setPersonalDataPoints] = useState<DataPoint[]>([]);
 
     useEffect(() => {
-        // Fetch recent query history from Chrome storage
+        // Retrieves data from local storage on component mount
         chrome.storage.local.get(
             [
                 'queryHistory',
@@ -47,13 +47,14 @@ const Popup = () => {
                 }
                 setShowRecentSearches(result.showRecentSearches ?? true);
                 setShowDataMinimizationAlerts(result.enableDataMinimization ?? false);
-                // set warning count 0
+                // Set warning count 0
                 chrome.action.setBadgeText({text: ''});
                 chrome.storage.local.set({discrepancyCount: 0});
             }
         );
     }, []);
 
+    // Renders each query item with a tag indicating its sensitivity
     const renderQueryItem = (item: QueryHistory) => (
         <div className="query-item">
             <span className="query-text">{item.query}</span>
