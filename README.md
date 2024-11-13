@@ -1,6 +1,35 @@
 # SearchSensei: Featuring Sensitivity-Based Search Customization and Data Minimization Alerts
 
-SearchSensei is a Chrome extension that helps you protect sensitive information in your search queries. It provides options to customize your search input to limit data sharing and alerts you to unnecessary data collection practices.
+## SearchSensei is a Chrome extension that helps you protect sensitive information in your search queries. It provides options to customize your search input to limit data sharing and alerts you to unnecessary data collection practices.
+
+## Installation Options
+
+There are two ways to install SearchSensei:
+
+1.  **For Testing Only (No Development Setup Required)**
+
+    If you want to test the extension without setting up a development environment:
+
+    - **Download/Collect the `dist` Folder**:
+
+      - Obtain the `dist` folder from the developer. This folder is pre-built and does not require installation of Node.js or other development tools.
+
+    - **Load the Extension in Chrome**: 1. Open Chrome and go to `chrome://extensions/`. 2. Enable **Developer mode** using the toggle in the upper-right corner. 3. Click **Load unpacked** and navigate to the `dist` folder you obtained.
+      ![Screenshot of chrome extension load menu](./screenshots/chrome-extension-load-menu.png)
+
+           4. Select the `dist` folder, and the extension should appear in your Chrome extensions list.
+
+      ![Screenshot of chrome extension load menu](./screenshots/extension-loaded.png)
+
+    - **For an In-Depth User Guide**:
+      - To learn more about using SearchSensei’s features, visit the [User Guide](USER_GUIDE.md).
+
+2.  **For Development and Customization** (requires Node.js, Git, and other prerequisites):
+    - Clone the repository, set up the development environment, and build the extension yourself by following the steps below.
+
+---
+
+## Installation and Setup (For Development)
 
 ## Prerequisites
 

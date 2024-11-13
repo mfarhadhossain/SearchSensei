@@ -5,7 +5,7 @@
   background-color: #e3f2fd;
   border-radius: 12px;
 
-  background-image: url('../static/colorful-abstract-textured-background-design.jpg');
+  background-image: url('../static/colorful-abstract-textured-background-design-optimized.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -34,7 +34,7 @@
 
 .p-card .p-card-body {
   padding: 1rem !important;
-  background-image: url('../static/colorful-abstract-textured-background-design.jpg');
+  background-image: url('../static/colorful-abstract-textured-background-design-optimized.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
