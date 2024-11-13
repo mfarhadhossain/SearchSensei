@@ -30,10 +30,12 @@ To configure SearchSensei’s settings:
 On the Preferences page, you will find several options to customize your SearchSensei experience.
 ![Screenshot of Preference page](./screenshots/Privacy%20Preferences.png)
 
+Each feature on this page corresponds to privacy or usability options, and preferences are saved locally in your browser. SearchSensei references these preferences to filter and act on data in your searches in real time.
+
 ### Enabling or Disabling Features
 
-- **Query Sanitization**: Toggle this feature to enable sensitivity-based query sanitization. When active, SearchSensei checks for sensitive terms in your query and allows you to adjust the query as needed.
-- **Data Minimization Alerts**: When enabled, this feature monitors and alerts you if unnecessary data is being sent along with your query.
+- **Query Sanitization**: Toggle this feature to enable sensitivity-based query sanitization. When active, SearchSensei checks for sensitive terms in your query, consulting categories you’ve marked as sensitive, and allows you to adjust the query as needed.
+- **Data Minimization Alerts**: When enabled, this feature monitors and alerts you if unnecessary data, such as location, session tokens, or user agent data, is being sent along with your query.
 - **Show Recent Searches**: Toggle this feature to display recent search queries in the extension’s popup.
 
 Each feature can be independently enabled or disabled.
@@ -43,7 +45,7 @@ Each feature can be independently enabled or disabled.
 ![Screenshot of search query](./screenshots/query-search.png)
 When SearchSensei detects sensitive information in a search query, it prompts you to review and sanitize it before proceeding.
 
-1. **Sanitization Prompt**: If sensitive terms are detected, a dialog appears with each term highlighted.
+1. **Sanitization Prompt**: If sensitive terms are detected based on your privacy settings, a dialog appears with each term highlighted. Sensitive categories (e.g., "Name," "Location") are predefined, but you can adjust them on the Preferences page.
 
    ![Screenshot of query sanitization dialog](./screenshots/query-sanitization-dialog.png)
 
@@ -52,6 +54,9 @@ When SearchSensei detects sensitive information in a search query, it prompts yo
    - **Replace** the term with a placeholder (e.g., `[NAME]`).
    - **Abstract** the term to a general description (e.g., replacing "20 years old" with "age").
 3. Once you have made your selections, confirm to update the query and proceed with the sanitized version.
+
+## How It Works
+When you submit a search, SearchSensei performs a sensitivity check on your query by using OpenAI’s API to analyze for terms that match sensitive categories. For each detected term, the extension generates an option to keep, replace, or abstract it. This gives you the choice to anonymize your query without changing its meaning, allowing greater control over the data you share.
 
 ## Handling Data Minimization Alerts
 
@@ -62,6 +67,8 @@ If **Data Minimization Alerts** is enabled, SearchSensei will alert you if unnec
    ![Screenshot of Data Minimization](./screenshots/data-minimization-alert.png)
 3. The popup also displays recent searches if **Show Recent Searches** is enabled, allowing you to track your search history easily.
 
+## How It Works
+SearchSensei actively examines the data being sent in your request to ensure minimal data sharing. It checks parameters like location, session tokens, user agents, and cookies to see if data exceeds what is necessary for your search. Any detected excess data points appear as an alert, which you can review in the popup.
 ## Compatibility Note
 
 SearchSensei is designed to work with Google, Bing, and DuckDuckGo search engines. However, due to varying security policies across these sites, certain features or UI elements may not function consistently.
